@@ -7,8 +7,12 @@ build:
   jobs:
     post_checkout:
       - git fetch --unshallow || true
+
 sphinx:
   configuration: docs/source/conf.py
+
+conda:
+  environment: environment.yml
 
 python:
   install:
