@@ -60,7 +60,7 @@ sphinx:
 python:
   install:
     - method: pip
-      path: .
+      path: cedar
       extra_requirements:
         - docs
 
