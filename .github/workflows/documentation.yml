@@ -3,6 +3,7 @@ name: Deploy Sphinx documentation to Pages
 on:
   push:
     branches: [ main ] # Trigger on pushes to the 'main' branch
+  workflow_dispatch
 
 jobs:
   pages:
