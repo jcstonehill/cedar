@@ -1,6 +1,6 @@
 # Cedar: Computational Environment for Dynamics of Advanced Reactors
 
-[Full documentation is available on Read The Docs](cedar-docs.readthedocs.io/)
+[Full documentation is available on Read The Docs](https://cedar-docs.readthedocs.io/)
 
 Cedar (the Computational Environment for Dynamics of Advanced Reactors) is a
 high-fidelity, transient multiphysics code developed for the analysis of
