@@ -12,16 +12,15 @@ Cedar
      /************\      \_____|______|_____/_/    \_\_|  \_\
     /**************\   
    /****************\  
-          ||||          Computational Environment for Dynamics
-          ||||          Analysis of Reactor systems in space
+          ||||              Computational Environment for 
+          ||||              Dynamics of Advanced Reactors
 
-Cedar (the **Computational Environment for Dyanmics Analysis of Reactor systems
-in space**) is a high-fidelity, transient multiphysics code developed for the
-analysis of space nuclear reactor systems. It is designed to model the tightly
-coupled physics governing transient reactor behavior such as neutron transport,
-thermal hydraulics, and system power balance. Cedar is written entirely in
-Python, which makes it both easy to use and flexible to extend with new physics
-models.
+Cedar (the **Computational Environment for Dynamics of Advanced Reactors**) is a
+high-fidelity, transient multiphysics code developed for the analysis of
+advanced nuclear reactor systems. It is designed to model the tightly coupled
+physics governing transient reactor behavior such as neutron transport, thermal
+hydraulics, and system power balance. Cedar is written entirely in Python, which
+makes it both easy to use and flexible to extend with new physics models.
 
 .. toctree::
    :maxdepth: 2

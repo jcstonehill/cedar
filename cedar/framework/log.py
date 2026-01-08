@@ -39,8 +39,8 @@ class Log:
      /************\\      \\_____|______|_____/_/    \\_\\_|  \\_\\
     /**************\\   
    /****************\\  
-          ||||          Computational Environment for Dynamics
-          ||||          Analysis of Reactor systems in space
+          ||||              Computational Environment for 
+          ||||              Dynamics of Advanced Reactors
 
           
 """
