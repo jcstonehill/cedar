@@ -59,7 +59,7 @@ Clone Cedar from GitHub
 
 .. code-block:: bash
 
-    TODO: Add info after Cedar is added to GitHub.
+    git clone https://github.com/jcstonehill/cedar.git
 
 Install Python API
 ------------------

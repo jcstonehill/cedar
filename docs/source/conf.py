@@ -42,6 +42,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'venv', '.venv', '_templ
 html_theme = "sphinx_rtd_theme"
 
 html_static_path = ['_static']
-html_css_files = [
-    "custom.css"
-]
+
+html_context = {
+    "display_github": True,  # Integrate GitHub
+}
+
+github_url = "https://github.com/jcstonehill/cedar"
