@@ -12,8 +12,8 @@ import cedar.fluids as fluids
 
 # Framework
 from cedar.framework.problem import Problem
-from cedar.framework.mesh import *
-from cedar.framework.vars import *
+from cedar.framework.mesh import Mesh1D, Mesh3D
+from cedar.framework.vars import ScalarVar, FlowStateVar, Mesh1DVar, Mesh3DVar
 from cedar.framework import helper
 from cedar.framework.log import Log
 
