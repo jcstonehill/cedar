@@ -1,0 +1,18 @@
+[project]
+name = "cedar"
+version = "0.1.0"
+description = "Computational Environment for Dyanmics Analysis of Reactor systems in space"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "meshio"
+]
+
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cedar"]
+exclude = ["outputs", "examples"]

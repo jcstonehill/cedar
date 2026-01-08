@@ -1,0 +1,3 @@
+from cedar.benchmarks.thermal.adiabatic_transient_0d.adiabatic_transient_0d import AdiabaticTransient0D
+from cedar.benchmarks.thermal.dirichlet_steady_1d.dirichlet_steady_1d import DirichletSteady1D
+from cedar.benchmarks.thermal.nafems_transient_1d.nafems_transient_1d import NAFEMSTransient1D
