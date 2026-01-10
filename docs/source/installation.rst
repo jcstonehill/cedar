@@ -72,8 +72,9 @@ Activate Environment
 
 Install Python API
 ------------------
-Navigate to the root Cedar directory and install the API using pip. Make sure
-that the Cedar Conda environment is active before installing the API.
+Navigate to the root Cedar directory (where ``pyproject.toml`` is located) and
+install the API using pip. Make sure that the Cedar Conda environment is active
+before installing the API.
 
 .. code-block:: bash
 
