@@ -5,6 +5,7 @@ This section details the steps to installing Cedar and its dependencies.
 
 .. note::
     If you wish to run any models that utilize OpenMC, then:
+    
     - Cedar must be executed on Linux (Windows users can use WSL).
     - OpenMC must be included in the Conda installation.
 
@@ -16,6 +17,14 @@ for you to use Linux is to take advantage of Windows Subsystem for Linux (WSL).
 
 Check here for instructions:
 `How to Install Windows Subsystem for Linux <https://learn.microsoft.com/en-us/windows/wsl/install>`_.
+
+Clone Cedar from GitHub
+-----------------------
+From the Ubuntu command line, use these commands:
+
+.. code-block:: bash
+
+    git clone https://github.com/jcstonehill/cedar.git
 
 Create Conda Environment
 ------------------------
@@ -44,29 +53,19 @@ Then, update the Conda base envionment and add the conda-forge channel.
     conda update --all --yes
     conda config --add channels conda-forge
 
-Finally, create a new Conda environment and add OpenMC. Note that your version
-number might be different.
-
-.. code-block:: bash
-
-    conda create --name cedar
-    conda activate cedar
-    conda search openmc
-    conda install openmc=0.15.3=nodagmc_nompi_py313he95176b_0
-    
-Clone Cedar from GitHub
------------------------
-
-.. code-block:: bash
-
-    git clone https://github.com/jcstonehill/cedar.git
-
-Install Python API
-------------------
-Navigate to the Cedar directory and install the API using pip. Make sure that
-the Cedar Conda environment is active before installing the API.
+Finally, create a new Conda environment and using the included environment.yml
+file.
 
 .. code-block:: bash
 
     cd cedar
+    conda env create -f environment.yml
+
+Install Python API
+------------------
+Navigate to the root Cedar directory and install the API using pip. Make sure
+that the Cedar Conda environment is active before installing the API.
+
+.. code-block:: bash
+
     python -m pip install .
