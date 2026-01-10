@@ -5,7 +5,7 @@ This section details the steps to installing Cedar and its dependencies.
 
 .. note::
     If you wish to run any models that utilize OpenMC, then:
-    
+
     - Cedar must be executed on Linux (Windows users can use WSL).
     - OpenMC must be included in the Conda installation.
 
@@ -60,6 +60,13 @@ file.
 
     cd cedar
     conda env create -f environment.yml
+
+Activate Environment
+--------------------
+
+.. code-block:: bash
+
+    conda activate cedar
 
 Install Python API
 ------------------
