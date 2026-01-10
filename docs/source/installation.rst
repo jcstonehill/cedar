@@ -46,6 +46,8 @@ show before the command line.
     conda init --all
     exit
 
+Using the ``exit`` command will exit your terminal. Once you re-open your terminal, ``conda`` will be active.
+
 Then, update the Conda base envionment and add the conda-forge channel.
 
 .. code-block:: bash
