@@ -35,7 +35,7 @@ without any bulk motion of the material.
 At the macroscopic level, this behavior is described by Fourier's law.
 
 .. math::
-    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = q'''
+    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''
 
 Where
 
@@ -43,7 +43,7 @@ Where
 | :math:`c_p` is specific heat capacity :math:`[\frac{J}{kg K}]`
 | :math:`T` is temperature :math:`[K]`
 | :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
-| :math:`q'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
+| :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
 
 The mass density, specific heat capacity, and thermal conductivity are all
 properties of the material in question. The internal heat source can come from
@@ -99,18 +99,21 @@ The possible boundary conditions for the heat transfer equation are as follows:
 Numerical Implementation
 ------------------------
 
+.. warning::
+    The ``Thermal`` model does not account for tangential cell flux at this time. It will be incorporated as future work.
+
 1. Finite Volume Method
     The Finite Volume Method (FVM) is applied to the heat transfer equation.
     
     Starting from the Partial Differential Equation (PDE):
 
     .. math::
-        \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = q'''
+        \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''
 
     Rewrite in terms of flux.
 
     .. math::
-        \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla J = q_i'''
+        \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla J = \dot{q}_i'''
 
     Where
 
@@ -121,7 +124,7 @@ Numerical Implementation
     :math:`i`, by integrating all terms over the cell volume.
 
     .. math::
-        \left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i - \sum^{m}_{j=1} A_j J_j = q_i
+        \left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i - \sum^{m}_{j=1} A_j J_j = \dot{q}_i
 
     Where
 
@@ -130,7 +133,7 @@ Numerical Implementation
     | :math:`m` is the number of faces of cell :math:`i`
     | :math:`V` is cell volume :math:`[m^3]`
     | :math:`A` is area of a face :math:`[m^2]`
-    | :math:`q` is internal heat source :math:`[W]`
+    | :math:`\dot{q}` is internal heat source :math:`[W]`
 
 2. Face Calculations
     Flux is defined by the gradient of temperature and the thermal conductivity.
@@ -278,7 +281,7 @@ Numerical Implementation
     known as Implicit Euler Method) is applied to the time derivatives.
 
     .. math::
-        \rho_i {c^{n+1}_p}_i(T^{n+1}_i) V_i \frac{T^{n+1}_i - T^{n}_i}{\Delta t}  - \sum^{m}_{j=1} A_j J^{n+1}_j = q^{n+1}_i
+        \rho_i {c^{n+1}_p}_i(T^{n+1}_i) V_i \frac{T^{n+1}_i - T^{n}_i}{\Delta t}  - \sum^{m}_{j=1} A_j J^{n+1}_j = \dot{q}^{n+1}_i
 
     Where
 

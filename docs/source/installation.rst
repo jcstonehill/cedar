@@ -79,3 +79,5 @@ before installing the API.
 .. code-block:: bash
 
     python -m pip install .
+
+Cedar is ready! Try running any file in the examples folder.
