@@ -1,6 +1,7 @@
 # Other
 test.py
 examples/*/outputs
+cedar/fluids/data/parahydrogen_v05.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
