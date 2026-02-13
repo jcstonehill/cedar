@@ -1,4 +1,5 @@
 from cedar.materials.constant import ConstantMaterial
+from cedar.materials.u10mo import U10Mo
 from cedar.materials.uc_zrc_c import UC_ZrC_C
 from cedar.materials.un import UN
 from cedar.materials.uo2 import UO2
