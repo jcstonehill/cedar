@@ -1,4 +1,6 @@
 from cedar.materials.constant import ConstantMaterial
 from cedar.materials.uc_zrc_c import UC_ZrC_C
+from cedar.materials.un import UN
+from cedar.materials.uo2 import UO2
 from cedar.materials.zrc import ZrC
 from cedar.materials.zrc_c import ZrC_C

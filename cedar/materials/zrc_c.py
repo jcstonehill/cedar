@@ -7,8 +7,8 @@ class ZrC_C(cedar.Material):
     Zirconium Carbide - Graphite Composite
 
     Reference:
-    SNP-HDBK-0008 SNP Material Property Handbook
-    https://ntrs.nasa.gov/citations/20240004217
+        SNP-HDBK-0008 SNP Material Property Handbook
+        https://ntrs.nasa.gov/citations/20240004217
     """
 
     T_min = 200

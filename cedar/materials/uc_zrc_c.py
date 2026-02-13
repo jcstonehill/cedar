@@ -7,9 +7,9 @@ class UC_ZrC_C(cedar.Material):
     Composite NERVA Fuel
 
     Reference:
-    L. L. Lyon, “Performance of (U, Zr)C-Graphite (Composite) and of (U, Zr)C
-    (Carbide) Fuel Elements in the Nuclear Furance 1 Rest Reactor,” Los Alamos
-    National Laboratory, Report LA-5398-MS Vol 1, Los Alamos, NM, Sept. 1973.
+        L. L. Lyon, “Performance of (U, Zr)C-Graphite (Composite) and of (U, Zr)C
+        (Carbide) Fuel Elements in the Nuclear Furance 1 Rest Reactor,” Los Alamos
+        National Laboratory, Report LA-5398-MS Vol 1, Los Alamos, NM, Sept. 1973.
     """
 
     T_min = 300
