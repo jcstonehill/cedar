@@ -11,22 +11,37 @@ class ZrC_C(cedar.Material):
     https://ntrs.nasa.gov/citations/20240004217
     """
 
+    T_min = 200
+    T_max = 3100
+
     def rho_rt(self) -> float:
         return 6700.0
     
     def k(self, T: np.ndarray) -> np.ndarray:
-        T = np.asarray(T, dtype=float)
-        T2 = T*T
+        T = np.array(T, dtype = np.float64)
+        T_k = T/1000.0
+        T_k2 = T_k * T_k
+        k = np.zeros_like(T)
 
-        return np.where(
-            T <= 1100,
-            80.2218845 + (-0.067901)*T + 0.000022781*T2,
-            24.012     + 0.008175*T   + 7.545e-8*T2
-        )
+        mask = T <= 1100.0
+
+        A0, A1, A2 = 77.967, -67.901, 22.781
+        k[mask] = A0 + A1*T_k[mask] + A2*T_k2[mask]
+
+        # A0 (below) was reduced from 24.012 to 21.757 to create a smooth curve.
+        # It appears that this would still line up with the experimental data
+        # used in SNP-HDBK-0008
+        A0, A1, A2 = 21.757, 8.175, 0.07545
+        k[~mask] = A0 + A1*T_k[~mask] + A2*T_k2[~mask]
+
+        return k
 
     def cp(self, T: np.ndarray) -> np.ndarray:
-        T = np.asarray(T, dtype=float)
-        T2 = T*T
-        T3 = T*T*T
+        T = np.array(T, dtype = np.float64)
+        T_k = T/1000.0
+        T_k2 = T_k*T_k
+        T_k3 = T_k2*T_k
 
-        return 228.03 + 0.4422*T + -0.0001948*T2 + 3.318e-8*T3
+        # Coefficients multiplied by 1000 to convert from [J/g-K] to [J/kg-K]
+        A0, A1, A2, A3 = 228.03, 442.2, -194.8, 33.18
+        return A0 + A1*T_k + A2*T_k2 + A3*T_k3

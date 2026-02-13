@@ -7,6 +7,10 @@ class ConstantMaterial(cedar.Material):
     """
     Constant Material
     """
+
+    T_min = 0
+    T_max = 5000
+
     def __init__(self, rho_rt: float, k: float, cp: float):
         self._rho_rt: float = rho_rt
         self._k: float = k
@@ -16,7 +20,10 @@ class ConstantMaterial(cedar.Material):
         return self._rho_rt
     
     def k(self, T: np.ndarray) -> np.ndarray:
+        T = np.array(T, dtype = np.float64)
+
         return np.full_like(T, self._k)
     
     def cp(self, T: np.ndarray) -> np.ndarray:
+        T = np.array(T, dtype = np.float64)
         return np.full_like(T, self._cp)

@@ -11,7 +11,8 @@ class Material(ABC):
     used in heat transfer and neutron transport calculations.
     """
 
-    _plot_T = np.linspace(0, 3000, 500)
+    T_min = 0
+    T_max = 5000
 
     @abstractmethod
     def k(self, T: np.ndarray) -> np.ndarray:
@@ -80,7 +81,7 @@ class Material(ABC):
         """
         Plot thermal conductivity over a standard temperature range.
         """
-        plt.plot(self._plot_T, self.k(self._plot_T))
+        plt.plot(self._plot_T(), self.k(self._plot_T()))
         plt.grid(True)
         plt.xlabel("T [K]")
         plt.ylabel("k [W/m-K]")
@@ -91,9 +92,12 @@ class Material(ABC):
         """
         Plot specific heat capacity over a standard temperature range.
         """
-        plt.plot(self._plot_T, self.cp(self._plot_T))
+        plt.plot(self._plot_T(), self.cp(self._plot_T()))
         plt.grid(True)
         plt.xlabel("T [K]")
         plt.ylabel("Cp [J/kg-K]")
         plt.show()
         plt.clf()
+
+    def _plot_T(self):
+        return np.linspace(self.T_min, self.T_max, 100)
