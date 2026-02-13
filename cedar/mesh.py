@@ -211,12 +211,12 @@ class Mesh3D(Mesh):
         # axis=1 calculates the norm across the [x, y, z] vector for each row
         cross_norms = np.linalg.norm(cross_prod, axis=1)
 
-        self.face_areas = 0.5 * cross_norms.astype(np.float32)
+        self.face_areas = 0.5 * cross_norms.astype(np.float64)
 
         # Normalize the vectors to get unit normals
         # We add [:, np.newaxis] to allow division of (N,3) by (N,1)
         # Added epsilon (1e-12) to prevent division by zero for degenerate faces
-        self.face_n = (cross_prod / (cross_norms[:, np.newaxis] + 1e-12)).astype(np.float32)
+        self.face_n = (cross_prod / (cross_norms[:, np.newaxis] + 1e-12)).astype(np.float64)
 
         # 4. Vectorized Neighbor Distances (face_d)
         # Gather cell centers for all adjacent cells
@@ -233,7 +233,7 @@ class Mesh3D(Mesh):
         d2 = np.abs(np.sum(v2 * self.face_n, axis=1))
         d2[~self.face_is_interior] = 0
 
-        self.face_d = np.stack((d1, d2), axis=1).astype(np.float32)
+        self.face_d = np.stack((d1, d2), axis=1).astype(np.float64)
 
         for boundary in self.boundaries:
             self.boundary_area[boundary] = np.sum(self.face_areas[self.boundary_i[boundary]])
@@ -254,7 +254,7 @@ class Mesh3D(Mesh):
         # Now we know N_cells, so we can allocate data arrays.
         self.cell_pts_i: np.ndarray = np.array(self.cell_pts_i, dtype=np.uint32)
         self.cell_faces_i: np.ndarray = np.zeros((self.N_cells, 4), dtype = np.uint32)
-        self.cell_centers: np.ndarray = np.zeros((self.N_cells, 3), dtype = np.float32)
+        self.cell_centers: np.ndarray = np.zeros((self.N_cells, 3), dtype = np.float64)
 
         # Finally, we need to create a dictionary of unique faces. key is tuple
         # of (p1, p2, p3) where p1, p2, p3 are face point i in ascending order.

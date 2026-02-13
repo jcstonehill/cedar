@@ -47,8 +47,8 @@ class AdiabaticBC(HeatTransferBC):
         pass
 
     def iterate(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        LHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float32)
-        RHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float32)
+        LHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
+        RHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
 
         return LHS, RHS
 
@@ -72,7 +72,7 @@ class FixedTemperatureBC(HeatTransferBC):
         return self._value
 
     def initialize(self, t_start: float):
-        self._area_over_L = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float32)
+        self._area_over_L = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
 
         for i, face_i in enumerate(self.mesh.boundary_i[self.boundary]):
             self._area_over_L[i] = self.mesh.face_areas[face_i] / self.mesh.face_d[face_i][0]
@@ -93,7 +93,7 @@ class FixedTemperatureBC(HeatTransferBC):
             self._value = np.full(self.mesh.boundary_N[self.boundary], self.T)
     
     def _evaluate_func(self, t: float):
-        values = np.zeros(self.mesh.boundary_N[self.boundary], dtype = np.float32)
+        values = np.zeros(self.mesh.boundary_N[self.boundary], dtype = np.float64)
 
         for i, face_i in enumerate(self.mesh.boundary_i[self.boundary]):
             x = self.mesh.face_centers[face_i][0]
@@ -120,7 +120,7 @@ class HeatSource(cedar.Source):
         self.w = self._get_weighting()
 
         # NOW CALCULATE VALUE USING SHAPE AND QDOT
-        self._value = np.zeros(self.mesh.N_cells, dtype = np.float32)
+        self._value = np.zeros(self.mesh.N_cells, dtype = np.float64)
 
         # If volQdot is given, convert it to Qdot
         if self.volQdot is not None:
@@ -163,10 +163,10 @@ class HeatSource(cedar.Source):
     def _get_weighting(self):
         # CALCULATE SHAPE
         if self.shape_func is None:
-            w = np.ones(self.mesh.N_cells, dtype = np.float32)/self.mesh.N_cells
+            w = np.ones(self.mesh.N_cells, dtype = np.float64)/self.mesh.N_cells
 
         else:
-            w = np.zeros(self.mesh.N_cells, dtype = np.float32)
+            w = np.zeros(self.mesh.N_cells, dtype = np.float64)
 
             for i in range(self.mesh.N_cells):
                 x = self.mesh.cell_centers[i][0]

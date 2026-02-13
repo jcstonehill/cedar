@@ -34,7 +34,7 @@ class Field:
         self.values: dict[str, np.ndarray] = {}
 
     def as_continuous_cell_value(self) -> np.ndarray:
-        value = np.zeros(self.mesh.N_cells, dtype = np.float32)
+        value = np.zeros(self.mesh.N_cells)
 
         for region in self.mesh.regions:
             value[self.mesh.region_i[region]] = self.values[region]
@@ -55,7 +55,7 @@ class Field:
         #                 raise Exception(f"No IC provided for region: {region}")
 
     def ic_as_continuous_cell_value(self) -> np.ndarray:
-        ic = np.zeros(self.mesh.N_cells, dtype = np.float32)
+        ic = np.zeros(self.mesh.N_cells)
 
         for region in self.mesh.regions:
             ic[self.mesh.region_i[region]] = self.ic[region]
@@ -85,7 +85,7 @@ class Field:
 
                 # No IC Provided
                 if ic_input is None:
-                    ic[region] = np.zeros(N, dtype = np.float32)
+                    ic[region] = np.zeros(N)
 
                 # IC is func(x, y, z)
                 elif callable(ic_input):
@@ -95,10 +95,10 @@ class Field:
                     # Get coordinates for all cells using advanced indexing: Shape (N, 3)
                     coords = self.mesh.cell_centers[cell_indices]
  
-                    ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float32)
+                    ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
                 
                 else:
-                    ic[region] = np.full(N, ic_input, dtype=np.float32)
+                    ic[region] = np.full(N, ic_input, dtype=np.float64)
 
         if self.is_on_boundaries:
             for boundary in self.mesh.boundaries:
@@ -108,7 +108,7 @@ class Field:
 
                 # No IC Provided
                 if ic_input is None:
-                    ic[boundary] = np.zeros(N, dtype = np.float32)
+                    ic[boundary] = np.zeros(N)
 
                 # IC is func(x, y, z)
                 elif callable(ic_input):
@@ -118,10 +118,10 @@ class Field:
                     # Get coordinates for all cells using advanced indexing: Shape (N, 3)
                     coords = self.mesh.face_centers[face_indicies]
  
-                    ic[boundary] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float32)
+                    ic[boundary] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
                 
                 else:
-                    ic[boundary] = np.full(N, ic_input, dtype=np.float32)
+                    ic[boundary] = np.full(N, ic_input, dtype=np.float64)
 
         return ic
     
