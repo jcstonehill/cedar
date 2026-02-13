@@ -20,7 +20,7 @@ cedar
    cedar.Source
 
 cedar.models
-----------
+------------
 .. autosummary::
    :toctree: generated
    :nosignatures:

@@ -6,7 +6,7 @@ Below is the technical documentation for all models currently included in Cedar.
 .. toctree::
    :maxdepth: 1
 
-   thermal.rst
+   heat_transfer.rst
 
 TODO:
 
