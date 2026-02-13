@@ -35,8 +35,6 @@ makes it both easy to use and flexible to extend with new physics models.
    :hidden:
 
    installation
-   examples/index
    theory/index
-   benchmarks/index
    api/index
    GitHub <https://github.com/jcstonehill/cedar>
