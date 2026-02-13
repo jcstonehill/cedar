@@ -2,12 +2,11 @@ import cedar
 import numpy as np
 
 
-class UC_ZrC_C(cedar.base.Material):
+class UC_ZrC_C(cedar.Material):
     """
     Composite NERVA Fuel
 
     Reference:
-
     F. P. Durham, “Nuclear Engine Definition Study PreliminaryReport, Volume 1 -
     Engine Description,” Los Alamos National Laboratory, Report LA-5044-MS Vol 1,
     Los Alamos, NM, Sept. 1972.
@@ -37,11 +36,11 @@ class UC_ZrC_C(cedar.base.Material):
         dtype=float
     )
 
-    def rho_rt(self):
-        return 6700
+    def rho_rt(self) -> float:
+        return 6700.0
     
-    def k(self, T):
+    def k(self, T: np.ndarray) -> np.ndarray:
         return np.interp(T, self._k_T_data, self._k_data)
 
-    def cp(self, T):
+    def cp(self, T: np.ndarray) -> np.ndarray:
         return np.interp(T, self._cp_T_data, self._cp_data)

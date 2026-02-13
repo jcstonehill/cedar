@@ -3,7 +3,7 @@ import numpy as np
 import cedar
 
 
-class ZrC(cedar.base.Material):
+class ZrC(cedar.Material):
     """
     Zirconium Carbide
 
@@ -12,10 +12,10 @@ class ZrC(cedar.base.Material):
     https://ntrs.nasa.gov/citations/20240004217
     """
 
-    def rho_rt(self):
-        return 6730
+    def rho_rt(self) -> float:
+        return 6730.0
     
-    def k(self, T):
+    def k(self, T: np.ndarray) -> np.ndarray:
         # if T < 100 or T > 2650:
         #     raise Exception("Violated temperature limits: " + str(T))
            
@@ -23,7 +23,7 @@ class ZrC(cedar.base.Material):
 
         return A0 + A1*(T/1000) + A2*(T/1000)**2
     
-    def cp(self, T):
+    def cp(self, T: np.ndarray) -> np.ndarray:
         T = np.asarray(T, dtype=float)
         T_k = T / 1000.0
 
@@ -47,4 +47,4 @@ class ZrC(cedar.base.Material):
             + B_2 / (T_k[~mask]**2)
         )
 
-        return cp
+        raise Exception("Need to implement this like zrc_c")

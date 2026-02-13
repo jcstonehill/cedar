@@ -2,7 +2,7 @@ import cedar
 import numpy as np
 
 
-class ZrC_C(cedar.base.Material):
+class ZrC_C(cedar.Material):
     """
     Zirconium Carbide - Graphite Composite
 
@@ -11,10 +11,10 @@ class ZrC_C(cedar.base.Material):
     https://ntrs.nasa.gov/citations/20240004217
     """
 
-    def rho_rt(self):
-        return 6700
+    def rho_rt(self) -> float:
+        return 6700.0
     
-    def k(self, T):
+    def k(self, T: np.ndarray) -> np.ndarray:
         T = np.asarray(T, dtype=float)
         T2 = T*T
 
@@ -24,7 +24,7 @@ class ZrC_C(cedar.base.Material):
             24.012     + 0.008175*T   + 7.545e-8*T2
         )
 
-    def cp(self, T):
+    def cp(self, T: np.ndarray) -> np.ndarray:
         T = np.asarray(T, dtype=float)
         T2 = T*T
         T3 = T*T*T

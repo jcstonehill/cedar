@@ -1,24 +1,21 @@
-# Base
-import cedar.base as base
+from cedar.bc import BC
+from cedar.mesh import Mesh, Mesh0D, Mesh1D, Mesh3D
+from cedar.field import Field
+from cedar.material import Material
+from cedar.source import Source
+from cedar.model import Model
+from cedar.problem import Problem
+from cedar.log import Log
+from cedar.benchmark import Benchmark
 
-# Adapters
-import cedar.adapters as adapters
-
-# Benchmarks
-import cedar.benchmarks as benchmarks
-
-# Fluids
-import cedar.fluids as fluids
-
-# Framework
-from cedar.framework.problem import Problem
-from cedar.framework.mesh import Mesh1D, Mesh3D
-from cedar.framework.vars import ScalarVar, FlowStateVar, Mesh1DVar, Mesh3DVar
-from cedar.framework import helper
-from cedar.framework.log import Log
+# Functions
+import cedar.functions as functions
 
 # Materials
 import cedar.materials as materials
 
 # Models
-import cedar.models as models
+from cedar.models.heat_transfer import *
+
+# Benchmarks
+import cedar.benchmarks as benchmarks
