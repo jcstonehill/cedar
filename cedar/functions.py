@@ -1,6 +1,5 @@
 import numpy as np
 import meshio
-import gmsh
 import h5py as h5
 
 import cedar
