@@ -8,41 +8,25 @@ cedar
    :nosignatures:
    :template: class.rst
 
-   cedar.FlowStateVar
+   cedar.BC
+   cedar.Benchmark
    cedar.Log
+   cedar.Material
+   cedar.Mesh
    cedar.Mesh1D
    cedar.Mesh3D
-   cedar.Mesh1DVar
-   cedar.Mesh3DVar
+   cedar.Model
    cedar.Problem
-   cedar.ScalarVar
+   cedar.Source
 
-cedar.adapters
---------------
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: class.rst
-
-   cedar.adapters.Direct
-   cedar.adapters.NearestValue
-   cedar.adapters.Summation
-
-cedar.base
+cedar.models
 ----------
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: class.rst
 
-   cedar.base.Adapter
-   cedar.base.Benchmark
-   cedar.base.Fluid
-   cedar.base.Material
-   cedar.base.Mesh
-   cedar.base.Model
-   cedar.base.Var
+   cedar.HeatTransfer
 
 cedar.benchmarks
 ----------------
@@ -51,29 +35,16 @@ cedar.benchmarks
    :nosignatures:
    :template: childclass.rst
 
-   cedar.benchmarks.flow.THMCase1
-   cedar.benchmarks.thermal.AdiabaticTransient0D
-   cedar.benchmarks.thermal.DirichletSteady1D
-   cedar.benchmarks.thermal.NAFEMSTransient1D
+   cedar.benchmarks.AdiabaticTransient0D
+   cedar.benchmarks.DirichletSteady1D
+   cedar.benchmarks.NAFEMSTransient1D
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: function.rst
 
-   cedar.benchmarks.plot
    cedar.benchmarks.run
-
-cedar.fluids
----------------
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: childclass.rst
-
-   cedar.fluids.Hydrogen
-   cedar.fluids.IdealGas
-   cedar.fluids.Parahydrogen
 
 cedar.materials
 ---------------
@@ -87,13 +58,20 @@ cedar.materials
    cedar.materials.ZrC
    cedar.materials.ZrC_C
 
-cedar.models
-------------
+cedar.functions
+---------------
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: childclass.rst
+   :template: function.rst
 
-   cedar.models.Flow
-   cedar.models.ScalarFromFunc
-   cedar.models.Thermal
+   cedar.functions.format_computation_time
+   cedar.functions.gmsh_to_vtkhdf
+   cedar.functions.MAPE
+   cedar.functions.print_vtkhdf
+   cedar.functions.residual
+   cedar.functions.sort3
+   cedar.functions.tetra_vol
+   cedar.functions.triangle_area
+   cedar.functions.triangle_center
+   cedar.functions.triangle_normal
