@@ -12,8 +12,11 @@ class UC_ZrC_C(cedar.Material):
         National Laboratory, Report LA-5398-MS Vol 1, Los Alamos, NM, Sept. 1973.
     """
 
-    T_min = 300
-    T_max = 2600
+    T_min_k = 300
+    T_max_k = 2600
+
+    T_min_cp = 300
+    T_max_cp = 2800
 
     _k_T_data = np.array(
         [0., 300., 400., 500., 600., 700., 800., 1000., 1200., 1400.,

@@ -8,8 +8,11 @@ class ConstantMaterial(cedar.Material):
     Constant Material
     """
 
-    T_min = 0
-    T_max = 5000
+    T_min_k = 0
+    T_max_k = 10000
+
+    T_min_cp = 0
+    T_max_cp = 10000
 
     def __init__(self, rho_rt: float = 1, k: float = 1, cp: float = 1):
         self._rho_rt: float = rho_rt

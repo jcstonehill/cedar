@@ -12,8 +12,11 @@ class BeO(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
-    T_min = 200
-    T_max = 2301
+    T_min_k = 200
+    T_max_k = 2301
+
+    T_min_cp = 55
+    T_max_cp = 2820
 
     def rho_rt(self) -> float:
         return 3010

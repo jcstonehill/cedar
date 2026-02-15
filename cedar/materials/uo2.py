@@ -16,11 +16,18 @@ class UO2(cedar.Material):
         S. G. Popov, et. al., "Thermophysical Properties of MOX and UO2 Fuel
         Including the Effects of Radiation," Oak Ridge National Laboratory, Report
         ORNL/TM-2000/351, Oak Ridge, TN, Nov. 2000.
+
+    Notes:
+        The temperature where the thermal conductivity correlation transitions
+        from one curve fit to the other is shifted from 1800 K to 1620.54 K to
+        yield a smooth transition.
     """
 
-    T_min = 298.15
-    T_max = 3120
-
+    T_min_k = 500
+    T_max_k = 3000
+    
+    T_min_cp = 298.15
+    T_max_cp = 3120
 
     def __init__(self, P: float = 0):
         self.P = P
@@ -34,7 +41,7 @@ class UO2(cedar.Material):
         T_k2 = T_k*T_k
         k = np.zeros_like(T)
 
-        mask = T <= 1800
+        mask = T <= 1620.54
 
         A0, A1, A2 = 10.41, -9.44, 2.52
         k[mask] = A0 + A1*T_k[mask] + A2*T_k2[mask]

@@ -9,10 +9,18 @@ class ZrC_C(cedar.Material):
     Reference:
         SNP-HDBK-0008 SNP Material Property Handbook
         https://ntrs.nasa.gov/citations/20240004217
+
+    Notes:
+        The temperature where the thermal conductivity correlation transitions
+        from one curve fit to the other is shifted from 1100 K to 1019.34 K to
+        yield a smooth transition.
     """
 
-    T_min = 200
-    T_max = 3100
+    T_min_k = 200
+    T_max_k = 3100
+
+    T_min_cp = 300
+    T_max_cp = 3200
 
     def rho_rt(self) -> float:
         return 6700.0

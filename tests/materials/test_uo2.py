@@ -15,10 +15,12 @@ def test_k(T, val):
     assert material.k(T) == pytest.approx(val, 0.001)
 
 def test_bounds():
-    assert material.k(1e-12) > 0
-    assert material.k(5000) > 0
-    assert material.cp(1e-12) > 0
-    assert material.cp(5000) > 0
+    assert material.k(0) >= 0.
+    assert material.k(1e-12) > 0.
+    assert material.k(5000) > 0.
+    assert material.cp(0) >= 0.
+    assert material.cp(1e-12) > 0.
+    assert material.cp(5000) > 0.
 
 @pytest.mark.parametrize("T, val", [
     (300, 235.5),

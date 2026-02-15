@@ -10,10 +10,12 @@ class Material(ABC):
     This interface defines temperature-dependent properties commonly
     used in heat transfer and neutron transport calculations.
     """
+    
+    T_min_k = 0
+    T_max_k = 10000
 
-    name = "Material"
-    T_min = 0
-    T_max = 5000
+    T_min_k = 0
+    T_max_cp = 10000
 
     @abstractmethod
     def k(self, T: np.ndarray) -> np.ndarray:

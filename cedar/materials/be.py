@@ -18,14 +18,18 @@ class Be(cedar.Material):
 
     """
 
-    T_min = 200
-    T_max = 1560
+    T_min_k = 200
+    T_max_k = 1589
+
+    T_min_cp = 5
+    T_max_cp = 1560
 
     def rho_rt(self) -> float:
         return 1848
     
     def k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
+        T[T==0] = 1e-12 # Prevent divide by zero in AN term
         T_k = T / 1000.0
         T_k2 = T_k*T_k
         

@@ -12,9 +12,11 @@ class UN(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
-    T_min = 5
-    T_max = 2500
+    T_min_k = 10
+    T_max_k = 2500
 
+    T_min_cp = 5
+    T_max_cp = 3000
 
     def __init__(self, P: float = 0):
         self.P = P

@@ -12,8 +12,11 @@ class U10Mo(cedar.Material):
         National Laboratory, Report INL/EXT-10-19373, Idaho Falls, ID, Nov. 2010.
     """
 
-    T_min = 373.15
-    T_max = 1073.15
+    T_min_k = 293.15
+    T_max_k = 1073.15
+
+    T_min_cp = 373.15
+    T_max_cp = 1273.15
 
     def __init__(self, P: float = 0):
         self.P = P

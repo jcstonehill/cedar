@@ -12,8 +12,11 @@ class ZrC(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
-    T_min = 100
-    T_max = 2650
+    T_min_k = 100
+    T_max_k = 2650
+
+    T_min_cp = 5
+    T_max_cp = 2788
 
     def rho_rt(self) -> float:
         return 6730.0
