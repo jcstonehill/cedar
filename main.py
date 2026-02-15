@@ -11,12 +11,13 @@ ht.materials = {
 }
 ht.bc = {
     "left" : cedar.FixedTemperatureBC(400),
-    "right" :cedar.FixedTemperatureBC(300)
+    "right" : cedar.FixedTemperatureBC(300)
 }
 ht.source = cedar.HeatSource(1e4)
 
 problem = cedar.Problem([ht])
-#problem.t_end = 100
+problem.t_end = 10
 problem.solve()
 
 os.system(f"cp output.vtkhdf /mnt/c/Users/jacob/Documents/output.vtkhdf")
+os.system(f"cp test.vtkhdf /mnt/c/Users/jacob/Documents/test.vtkhdf")

@@ -36,7 +36,7 @@ class UO2(cedar.Material):
 
         mask = T <= 1800
 
-        A0, A1, A2 = 10.41, 9.44, 2.52
+        A0, A1, A2 = 10.41, -9.44, 2.52
         k[mask] = A0 + A1*T_k[mask] + A2*T_k2[mask]
 
         A0 = 1.73
@@ -46,7 +46,9 @@ class UO2(cedar.Material):
     
     def cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
+        T[T<=5] = 5
         
         C1, C2, C3, theta, Ea = 302.27, 8.463e-3, 8.741e7, 548.68, 18531.7
         theta_T = theta/T
-        return C1*(theta_T)**2 * np.exp(theta_T)/((np.exp(theta_T)-1)**2) + 2*C2*T + C3*Ea*np.exp(-Ea/T)/(T**2) 
+
+        return C1*(theta_T)**2 * np.exp(theta_T)/((np.exp(theta_T)-1)**2) + 2*C2*T + C3*Ea*np.exp(-Ea/T)/(T**2)

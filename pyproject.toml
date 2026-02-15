@@ -11,7 +11,7 @@ dependencies = [
     "CoolProp",
     "sphinx",
     "sphinx-rtd-theme",
-    "gmsh"
+    "pytest"
 ]
 
 [build-system]

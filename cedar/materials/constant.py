@@ -11,7 +11,7 @@ class ConstantMaterial(cedar.Material):
     T_min = 0
     T_max = 5000
 
-    def __init__(self, rho_rt: float, k: float, cp: float):
+    def __init__(self, rho_rt: float = 1, k: float = 1, cp: float = 1):
         self._rho_rt: float = rho_rt
         self._k: float = k
         self._cp: float = cp

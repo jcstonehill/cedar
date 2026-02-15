@@ -1,16 +1,14 @@
 import time
 
-from cedar.benchmarks.heat_transfer.adiabatic_transient_0d import AdiabaticTransient0D
-from cedar.benchmarks.heat_transfer.dirichlet_steady_1d import DirichletSteady1D
-from cedar.benchmarks.heat_transfer.nafems_transient_1d import NAFEMSTransient1D
+import cedar.benchmarks.heat_transfer as heat_transfer
 
 import cedar
 
 _benchmarks: dict[str, list[cedar.Benchmark]] = {
     "Heat Transfer" : [
-        AdiabaticTransient0D,
-        DirichletSteady1D,
-        NAFEMSTransient1D
+        heat_transfer.AdiabaticTransient0D,
+        heat_transfer.DirichletSteady1D,
+        heat_transfer.NAFEMSTransient1D
     ]
 }
 

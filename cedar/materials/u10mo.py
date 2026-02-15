@@ -30,7 +30,7 @@ class U10Mo(cedar.Material):
         T = np.array(T, dtype = np.float64)
         T2 = T*T
 
-        C0, C1, C2 = 137, 0.0512, 0.0000199
+        C0, C1, C2 = 124.5, 0.0403286, 1.99e-5
         return C0 + C1*T + C2*T2
 
         

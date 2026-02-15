@@ -23,7 +23,7 @@ class ZrC(cedar.Material):
         T_k = T/1000.0
         T_k2 = T_k*T_k
 
-        A0, A1, A2 = 23.76, 8.9, -7.014
+        A0, A1, A2 = 23.76, 8.9, -0.7014
         return A0 + A1*T_k + A2*T_k2
     
     def cp(self, T: np.ndarray) -> np.ndarray:
@@ -48,3 +48,5 @@ class ZrC(cedar.Material):
             + B2*T_k2[~mask]
             + B_2 / (T_k2[~mask])
         )
+
+        return cp

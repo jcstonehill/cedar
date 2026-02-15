@@ -11,6 +11,7 @@ class Material(ABC):
     used in heat transfer and neutron transport calculations.
     """
 
+    name = "Material"
     T_min = 0
     T_max = 5000
 

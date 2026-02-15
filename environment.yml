@@ -10,5 +10,6 @@ dependencies:
       - h5py
       - meshio
       - numpy
+      - pytest
       - sphinx
       - sphinx-rtd-theme

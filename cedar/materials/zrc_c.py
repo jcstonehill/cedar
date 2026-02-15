@@ -23,7 +23,7 @@ class ZrC_C(cedar.Material):
         T_k2 = T_k * T_k
         k = np.zeros_like(T)
 
-        mask = T <= 1100.0
+        mask = T <= 1019.34
 
         A0, A1, A2 = 77.967, -67.901, 22.781
         k[mask] = A0 + A1*T_k[mask] + A2*T_k2[mask]
@@ -31,7 +31,7 @@ class ZrC_C(cedar.Material):
         # A0 (below) was reduced from 24.012 to 21.757 to create a smooth curve.
         # It appears that this would still line up with the experimental data
         # used in SNP-HDBK-0008
-        A0, A1, A2 = 21.757, 8.175, 0.07545
+        A0, A1, A2 = 24.012, 8.175, 0.07545
         k[~mask] = A0 + A1*T_k[~mask] + A2*T_k2[~mask]
 
         return k

@@ -10,6 +10,12 @@ class Be(cedar.Material):
     Reference:
         SNP-HDBK-0008 SNP Material Property Handbook
         https://ntrs.nasa.gov/citations/20240004217
+
+    Notes:
+        The temperature where the specific heat capacity correlation transitions
+        from one curve fit to the other is shifted from 293 K to 316.197 K to
+        yield a smooth transition.
+
     """
 
     T_min = 200
@@ -33,7 +39,7 @@ class Be(cedar.Material):
 
         cp = np.zeros_like(T)
 
-        mask = T <= 293
+        mask = T <= 316.197
 
         A0, A1, A2 = 14230., -5.341, 14.39
         cp[mask] = (A0*T_k2[mask]) / (1 + A1*T_k[mask] + A2*T_k2[mask])

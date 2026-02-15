@@ -47,7 +47,7 @@ class UN(cedar.Material):
 
         mask = T <= 293
 
-        N, A0, A1, A2, A3 = 2.168, 2.784e2, 9.191e1, 7.568e2, 4.086e2
+        N, A0, A1, A2, A3 = 2.168, 2.784e5, 9.191e1, 7.568e2, 4.086e2
         cp[mask] = (A0*T_k[mask]**N) / (1 + A1*T_k[mask] + A2*T_k2[mask] + A3*T_k3[mask])
 
         # Coefficients multiplied by 1000 to convert from [J/g-K] to [J/kg-K]
