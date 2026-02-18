@@ -138,7 +138,7 @@ class HeatSource(cedar.Source):
 
         if isinstance(self.Qdot, dict):
             for region in self.mesh.regions:
-                if region not in self.Qdot[region]:
+                if region not in self.Qdot:
                     self.Qdot[region] = 0
 
                 region_i = self.mesh.region_i[region]
