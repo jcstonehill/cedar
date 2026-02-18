@@ -6,4 +6,4 @@ Below are some simple examples of Cedar problems to explain and illustrate how o
 .. toctree::
    :maxdepth: 1
 
-   box_heat_transfer.rst
+   01_box_heat_transfer.rst
