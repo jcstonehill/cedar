@@ -17,10 +17,10 @@ def test_k(T, val):
 def test_bounds():
     assert material.k(0) >= 0.
     assert material.k(1e-12) > 0.
-    assert material.k(5000) > 0.
+    assert material.k(10000) > 0.
     assert material.cp(0) >= 0.
     assert material.cp(1e-12) > 0.
-    assert material.cp(5000) > 0.
+    assert material.cp(10000) > 0.
 
 @pytest.mark.parametrize("T, val", [
     (0, 1),

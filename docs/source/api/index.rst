@@ -53,11 +53,17 @@ cedar.materials
    :nosignatures:
    :template: childclass.rst
 
+   cedar.materials.Be
+   cedar.materials.BeO
    cedar.materials.ConstantMaterial
+   cedar.materials.G348
+   cedar.materials.U10Mo
    cedar.materials.UC_ZrC_C
-   cedar.materials.ZrC
+   cedar.materials.UN
+   cedar.materials.UO2
    cedar.materials.ZrC_C
-
+   cedar.materials.ZrC
+   
 cedar.functions
 ---------------
 .. autosummary::

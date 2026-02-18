@@ -4,7 +4,7 @@ import numpy as np
 
 class ZrC_C(cedar.Material):
     """
-    Zirconium Carbide - Graphite Composite
+    Zirconium Carbide Composite
 
     Reference:
         SNP-HDBK-0008 SNP Material Property Handbook

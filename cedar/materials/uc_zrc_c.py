@@ -4,6 +4,8 @@ import numpy as np
 
 class UC_ZrC_C(cedar.Material):
     """
+    Uranium Zirconium Carbide Composite
+    
     Composite NERVA Fuel
 
     Reference:

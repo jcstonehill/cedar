@@ -37,5 +37,6 @@ makes it both easy to use and flexible to extend with new physics models.
    installation
    usersguide/index
    theory/index
+   materials/index
    api/index
    GitHub <https://github.com/jcstonehill/cedar>

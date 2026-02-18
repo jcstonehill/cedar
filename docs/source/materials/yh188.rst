@@ -1,0 +1,44 @@
+Yttrium Hydride (YH1.88)
+========================
+
+``cedar.materials.YH188()``
+
+Density
+-------
+
+4260.584 [kg/m3]
+
+Thermal Conductivity
+--------------------
+
+Valid Temperature Range:
+
+.. math::
+   300 \le T \le 823
+
+.. figure:: img/yh188_k.png
+   :scale: 100 %
+   :align: center
+
+   Thermal Conductivity
+
+Specific Heat Capacity
+----------------------
+
+Valid Temperature Range:
+
+.. math::
+   300 \le T \le 823
+
+.. figure:: img/yh188_cp.png
+   :scale: 100 %
+   :align: center
+
+   Specific Heat Capacity
+
+References
+----------
+
+X. Hu, et. al., “Handbook on the Material Properties of Yttrium Hydride
+for High-Temperature Moderator Applications,” Oak Ridge National Laboratory,
+Report ORNL/TM-2021/2052, Oak Ridge, TN, Jun. 2021.
