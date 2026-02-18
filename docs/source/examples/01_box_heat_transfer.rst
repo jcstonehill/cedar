@@ -36,23 +36,6 @@ useful utility to accomplish this: ``cedar.functions.gmsh_to_vtkhdf()``
     # Create Mesh for Heat Transfer Model
     mesh = cedar.Mesh3D("examples/01_box_thermal/box_heat_transfer.vtkhdf")
 
-Create the Mesh
----------------
-
-Instantiating Problem
-------------------------
-
-The first step in any Cedar problem is to instantiate the ``Problem`` object with a
-problem name as a parameter. The ``Problem`` object holds all of the models and
-model connections. 
-
-.. code-block:: python
-
-    import cedar
-
-    # Instantiate Problem Object
-    problem = cedar.Problem("box_thermal")
-
 Instantiate the Heat Transfer Model
 -----------------------------------
 
@@ -74,94 +57,48 @@ conditions. In addition, the boundary conditions (which default to
 ``AdiabaticBC`` for every boundary) and the heat source (which defaults to no
 source) should be adjusted where necessary for your problem.
 
-For this example, we set the material to ``ZrC``, the initial condition to 400
-K, the heat source to 50 kW, and left boundary 
-
-
-
-
-Define Thermal Model Parameters
--------------------------------
-
-Since this problem uses a ``Thermal`` model, we must build a mesh and a material
-properties object that will be used by the ``Thermal`` model.
-
-The mesh object should be created using some 3rd-party meshing software. In this
-case, we used GMSH. Cedar currently only supports tetrahedron elements, but
-development to support other mesh elements is marked for future development.
-
-The material properties objects are pre-defined as part of Cedar's materials
-module. We must simply instantiate the specific material we're interested in as
-seen below. If custom material properties are required, the Cedar materials
-module should be extended to accomodate.
+For this example, we set the material to ``ZrC``, the heat source to 50 kW, the
+left boundary condition to 300 K, the right boundary condition to 500 K, and the
+initial condition to 400 K.
 
 .. code-block:: python
 
-    # Build Mesh for Thermal Model
-    mesh = cedar.Mesh3D("box_thermal.msh")
-
-    # Define Material Properties
-    ZrC = cedar.materials.ZrC()
-
-Instantiate the Thermal Model
------------------------------
-
-Now that we have all of the required parameters ready, we can instantiate the
-thermal model. Each Cedar ``Model`` has unique parameters, so refer to the
-documentation of each ``Model`` to correctly define it. In the case of the
-Thermal model, the only parameters required are a name, the 3D mesh, and a
-dictionary of material properties where the dictionary keys correspond to each
-mesh region.
-
-.. code-block:: python
-
-    # Instantiate Model
-    thermal = cedar.models.Thermal("thermal", mesh, {"volume" : ZrC})
-
-Set Source, BCs, and ICs
-------------------------
-
-The ``Thermal`` model is instantiated with no source term and Adiabatic boundary
-conditions. We use helpful methods that come with the ``Thermal`` model to define
-the heat source and boundary conditions, as shown below.
-
-.. code-block:: python
+    ht.materials = {
+        "volume" : cedar.materials.ZrC()
+    }
 
     # Set Heat Source
-    thermal.set_Qdot(5e4)
+    ht.source = cedar.HeatSource(5e4)
 
     # Set Boundary Conditions (Default is Adiabatic)
-    thermal.set_bc("left", "dirichlet", 300)
-    thermal.set_bc("right", "dirichlet", 500)
-
-Each Cedar variable (found in the Model.vars object) has three values associated
-with it:
-
-- ``Var.prev_val``: The previous value of ``Var.val``. This is used internally to check for variable convergence.
-- ``Var.val``: The current value of the variable.
-- ``Var.initial``: If ``Problem`` is steady state, this is the initial guess at the solution. If ``Problem`` is transient, this is the initial value at the start of the timestep.
-
-In this example problem, we set the initial guess at the steady state solution to 500 K.
-
-.. code-block:: python
+    ht.bc = {
+        "left" : cedar.FixedTemperatureBC(300),
+        "right" : cedar.FixedTemperatureBC(500)
+    }
 
     # Set Initial Conditions
-    thermal.vars.T.set_initial(500)
+    ht.T.ic = 400
 
-Add Model to Problem and Solve
-------------------------------
+Instantiating a Problem
+-----------------------
 
-Adding the ``Model`` to the ``Problem`` is how we instruct Cedar to solve the ``Model``.
+A ``Problem`` is a collection of models that are to be solved together. It is
+responsible for storing models, coupling data, and writing outputs. You can
+think of it as the conductor of the Cedar orchestra.
 
-.. note::
-    Since there is no coupling between two models in this example problem, no multiphysics iterations are necessary. The ``Problem`` will solve the decoupled ``Model`` to steady state.
-
-Finally, we call Problem.solve() which will solve the problem, and then generate an "outputs" folder in the same folder as the file you ran. The outputs folder will include .csv and .vtk files once the solve is complete.
+In this case, we instantiate the problem object, and add only 1 model to it (the
+heat transfer model).
 
 .. code-block:: python
 
-    # Add Problem to Model and Solve
-    problem.add_model(thermal)
+    # Create Problem
+    problem = cedar.Problem()
+    problem.add_model(ht)
+
+All that is left is to solve the problem. This will create an output file named ``output.vtkhdf``.
+
+.. code-block:: python
+
     problem.solve()
 
 Entire Example Problem File
@@ -171,30 +108,32 @@ Entire Example Problem File
 
     import cedar
 
-    # Instantiate Problem Object
-    problem = cedar.Problem("box_thermal")
-
-    # Build Mesh for Thermal Model
-    mesh = cedar.Mesh3D("box_thermal.msh")
-
-    # Define Material Properties
-    ZrC = cedar.materials.ZrC()
+    # Create Mesh for Heat Transfer Model
+    mesh = cedar.Mesh3D("examples/01_box_heat_transfer/box_heat_transfer.vtkhdf")
 
     # Instantiate Model
-    thermal = cedar.models.Thermal("thermal", mesh, {"volume" : ZrC})
+    ht = cedar.HeatTransfer(mesh)
+
+    ht.materials = {
+        "volume" : cedar.materials.ZrC()
+    }
 
     # Set Heat Source
-    thermal.set_Qdot(5e4)
+    ht.source = cedar.HeatSource(5e4)
 
     # Set Boundary Conditions (Default is Adiabatic)
-    thermal.set_bc("left", "dirichlet", 300)
-    thermal.set_bc("right", "dirichlet", 500)
+    ht.bc = {
+        "left" : cedar.FixedTemperatureBC(300),
+        "right" : cedar.FixedTemperatureBC(500)
+    }
 
     # Set Initial Conditions
-    thermal.vars.T.set_initial(500)
+    ht.T.ic = 400
 
-    # Add Problem to Model and Solve
-    problem.add_model(thermal)
+    # Create Problem
+    problem = cedar.Problem()
+    problem.add_model(ht)
+
     problem.solve()
 
 Outputs
@@ -210,4 +149,5 @@ created by the heat source.
 
    Temperature contour plot.
 
-In addition to temperature, many variables are saved to outputs including material properties, source values, and others.
+In addition to temperature, many variables are saved to outputs including
+material properties, source values, and others.

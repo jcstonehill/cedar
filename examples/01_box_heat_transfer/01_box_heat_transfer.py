@@ -1,9 +1,7 @@
-import os
-
 import cedar
 
 # Create Mesh for Heat Transfer Model
-mesh = cedar.Mesh3D("examples/01_box_thermal/box_heat_transfer.vtkhdf")
+mesh = cedar.Mesh3D("examples/01_box_heat_transfer/box_heat_transfer.vtkhdf")
 
 # Instantiate Model
 ht = cedar.HeatTransfer(mesh)
@@ -22,12 +20,10 @@ ht.bc = {
 }
 
 # Set Initial Conditions
-ht.T.ic = 500
+ht.T.ic = 400
 
 # Create Problem
 problem = cedar.Problem()
-problem.models.append(ht)
+problem.add_model(ht)
 
 problem.solve()
-
-os.system(f"cp output.vtkhdf /mnt/c/Users/jacob/Documents/output.vtkhdf")
