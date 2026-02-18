@@ -26,6 +26,9 @@ class Problem:
         self._is_built = False
         self._is_initialized = False
 
+    def add_model(self, model: cedar.Model):
+        self.models.append(model)
+
     def build(self):
         if self._is_built:
             return
