@@ -138,10 +138,13 @@ class HeatSource(cedar.Source):
 
         if isinstance(self.Qdot, dict):
             for region in self.mesh.regions:
+                if region not in self.Qdot[region]:
+                    self.Qdot[region] = 0
+
                 region_i = self.mesh.region_i[region]
 
                 w = self.w[region_i]
-                w = w / np.linalg.norm(w)
+                w = w / np.sum(w)
 
                 self._value[region_i] = self.Qdot[region] * w
 
@@ -168,12 +171,25 @@ class HeatSource(cedar.Source):
         else:
             w = np.zeros(self.mesh.N_cells, dtype = np.float64)
 
-            for i in range(self.mesh.N_cells):
-                x = self.mesh.cell_centers[i][0]
-                y = self.mesh.cell_centers[i][1]
-                z = self.mesh.cell_centers[i][2]
+            for region in self.mesh.regions:
+                region_i = self.mesh.region_i[region]
 
-                w[i] = self.shape_func(x, y, z)
+                if isinstance(self.shape_func, dict):
+                    if region in self.shape_func:
+                        shape_func = self.shape_func[region]
+
+                    else:
+                        shape_func = lambda x, y, z: 1
+
+                else:
+                    shape_func = self.shape_func
+
+                for i in region_i:
+                    x = self.mesh.cell_centers[i][0]
+                    y = self.mesh.cell_centers[i][1]
+                    z = self.mesh.cell_centers[i][2]
+
+                    w[i] = shape_func(x, y, z)
 
         w = w * self.mesh.cell_vols
 
