@@ -25,5 +25,6 @@ Below are all of the material property objects currently available in Cedar.
    uc_zrc_c.rst
    un.rst
    uo2.rst
+   yh188.rst
    zrc_c.rst
    zrc.rst
