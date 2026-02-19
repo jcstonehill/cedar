@@ -1,5 +1,5 @@
-Box Heat Transfer
-=================
+01 - Box Heat Transfer
+======================
 
 This is one of the simplest problems that can be defined in Cedar. The problem
 contains a single model and is solved to steady state with no coupling to any
