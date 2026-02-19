@@ -143,7 +143,7 @@ Below is a temperature contour plot. You can see the left boundary is 300 K, the
 right boundary is 500 K, and the cells inbetween show a quadratic function
 created by the heat source.
 
-.. figure:: img/01_box_thermal_T.png
+.. figure:: img/01_box_heat_transfer_T.png
    :scale: 50 %
    :align: center
 
