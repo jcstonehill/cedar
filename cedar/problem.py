@@ -7,10 +7,9 @@ import cedar
 
 class Problem:
     def __init__(
-        self,
-        models: list[cedar.Model] = [],
+        self
     ):
-        self.models: list[cedar.Model] = models
+        self.models: list[cedar.Model] = []
 
         self.meshes: dict[str, cedar.Mesh] = {}
 
