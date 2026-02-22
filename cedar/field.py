@@ -97,8 +97,11 @@ class Field:
  
                     ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
                 
-                else:
+                elif np.array(ic_input).size == 1:
                     ic[region] = np.full(N, ic_input, dtype=np.float64)
+
+                else:
+                    ic[region] = np.copy(ic_input)
 
         if self.is_on_boundaries:
             for boundary in self.mesh.boundaries:
@@ -120,8 +123,11 @@ class Field:
  
                     ic[boundary] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
                 
-                else:
+                elif np.array(ic_input).size == 1:
                     ic[boundary] = np.full(N, ic_input, dtype=np.float64)
+
+                else:
+                    ic[boundary] = np.copy(ic_input)
 
         return ic
     
