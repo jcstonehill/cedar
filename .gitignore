@@ -3,6 +3,8 @@ test.py
 examples/*/outputs
 material_plots
 output*
+output.vtkhdf
+post_commands.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -211,4 +213,3 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-output.vtkhdf
