@@ -71,11 +71,125 @@ class Mesh0D(Mesh):
         raise NotImplementedError()
 
 class Mesh1D(Mesh):
-    def __init__(self):
+    def __init__(
+            self,
+            N_cells: int,
+            region: str,
+            start_boundary: str,
+            end_boundary: str,
+            start: tuple[float],
+            end: tuple[float],
+            basis: str = "z"
+        ):
         self.id: int = next(Mesh.id)
         self.dim: int = 1
 
-        raise NotImplementedError()
+        self.start = start
+        self.end = end
+        self.basis = basis
+
+        self.ds = np.linalg.norm(end-start)/N_cells
+
+        self.regions: list[str] = [region]
+        self.boundaries: list[str] = [start_boundary, end_boundary]
+
+        # Attributes After Build
+        self.N_pts: np.ndarray = 0
+        self.pts: np.ndarray = []
+
+        self.N_cells: int = N_cells
+        self.cell_pts_i: np.ndarray = []
+        self.cell_faces_i: np.ndarray = []
+
+        self.N_faces: int = 0
+        self.face_pts_i: np.ndarray = []
+        self.face_cells_i: np.ndarray = []
+        self.face_is_interior: np.ndarray = []
+
+        self.cell_centers: np.ndarray = []
+        self.face_centers: np.ndarray = []
+        self.face_n: np.ndarray = []
+        self.face_d: np.ndarray = []
+
+        self.region_i: dict[str, np.ndarray] = {}
+        self.region_N: dict[str, int] = {}
+
+        self.boundary_i: dict[str, np.ndarray] = {}
+        self.boundary_N: dict[str, int] = {}
+
+    def build(self):
+        # Attributes After Build
+        self.N_pts: np.ndarray = self.N_cells + 1
+
+        delta = self.end - self.start
+        self.pts = np.zeros((self.N_pts, 3), dtype = np.float64)
+        for i in range(self.N_pts):
+            self.pts[i][:] = self.start + delta*i/(self.N_pts-1)
+
+        self.N_cells: int = self.N_cells # Already provided by the user.
+        self.cell_pts_i: np.ndarray = np.array([(i, i+1) for i in range(self.N_cells)])
+        self.cell_faces_i: np.ndarray = np.copy(self.cell_pts_i) # For 1D, points and faces are the same thing
+
+        # For 1D, points and faces are the same thing
+        self.N_faces: int = self.N_pts          
+        self.face_pts_i: np.ndarray = np.arange(self.N_pts)
+        self.face_is_interior: np.ndarray = np.full(self.N_faces, True)
+        self.face_is_interior[0] = False
+        self.face_is_interior[-1] = False
+        self.face_cells_i = np.zeros((self.N_faces, 2), dtype=np.int64)
+        self.face_cells_i[-1,:] = [self.N_cells-1, self.N_cells-1]
+
+        self.cell_centers: np.ndarray = np.zeros((self.N_cells, 3), dtype = np.float64)
+        delta = delta / np.linalg.norm(delta)
+        for i in range(self.N_cells):
+            self.cell_centers[i][:] = self.start + delta*self.ds*(0.5+i)
+        self.face_centers: np.ndarray = np.copy(self.pts) # For 1D, points and faces are the same thing
+
+        self.region_i: dict[str, np.ndarray] = {self.regions[0] : np.arange(self.N_cells)}
+        self.region_N: dict[str, int] = {self.regions[0] : self.N_cells}
+
+        self.boundary_i: dict[str, np.ndarray] = {
+            self.boundaries[0] : np.array([0]),
+            self.boundaries[1] : np.array([-1])
+        }
+        self.boundary_N: dict[str, int] = {
+            self.boundaries[0] : 1,
+            self.boundaries[1] : 1
+        }
+
+    def vtkhdf_dict(self) -> dict:
+        vtkhdf_dict = {
+            f"{self.id}_NumberOfPoints" : (self.pts.shape[0],),
+            f"{self.id}_Points" : self.pts,
+            "blocks" : {}
+        }
+
+        vtkhdf_dict["blocks"][self.regions[0]] = {
+            "NumberOfCells" : ((self.N_cells,), "i8"),
+            "Types" : (np.full(self.N_cells, 3), "uint8"), # 3 means VTK_LINE
+            "NumberOfConnectivityIds" : ((2*self.N_cells,), "i8"),
+            "Connectivity" : (np.ravel(self.cell_pts_i), "i8"),
+            "Offsets" : (np.arange(self.N_pts*2, step = 2), "i8")
+        }
+
+        vtkhdf_dict["blocks"][self.boundaries[0]] = {
+            "NumberOfCells" : ((1,), "i8"),
+            "Types" : ((1,), "uint8"), # 1 means VTK_VERTEX
+            "NumberOfConnectivityIds" : ((1,), "i8"),
+            "Connectivity" : ((0,), "i8"),
+            "Offsets" : ((0,1), "i8")
+        }
+
+        vtkhdf_dict["blocks"][self.boundaries[1]] = {
+            "NumberOfCells" : ((1,), "i8"),
+            "Types" : ((1,), "uint8"), # 1 means VTK_VERTEX
+            "NumberOfConnectivityIds" : ((1,), "i8"),
+            "Connectivity" : ((self.N_cells,), "i8"),
+            "Offsets" : ((0,1), "i8")
+        }
+
+        return vtkhdf_dict
+
 
 class Mesh3D(Mesh):
     def __init__(self, file: str):
@@ -94,7 +208,6 @@ class Mesh3D(Mesh):
         self.N_cells: int = 0
         self.cell_pts_i: np.ndarray = []
         self.cell_faces_i: np.ndarray = []
-        self.cell_region_i: np.ndarray = []
 
         self.N_faces: int = 0
         self.face_pts_i: np.ndarray = []
@@ -103,15 +216,19 @@ class Mesh3D(Mesh):
 
         self.cell_centers: np.ndarray = []
         self.face_centers: np.ndarray = []
-        self.face_n: np.ndarray = []
-        self.face_d: np.ndarray = []
 
         self.region_i: dict[str, np.ndarray] = {}
         self.region_N: dict[str, int] = {}
-        self.region_vol: dict[str, float] = {}
 
         self.boundary_i: dict[str, np.ndarray] = {}
         self.boundary_N: dict[str, int] = {}
+
+        # Specific to 3D
+        self.cell_vols: np.ndarray = []
+        self.face_areas: np.ndarray = []
+        self.face_n: np.ndarray = []
+        self.face_d: np.ndarray = []
+        self.region_vol: dict[str, float] = {}
         self.boundary_area: dict[str, float] = {}
 
     def build(self):
