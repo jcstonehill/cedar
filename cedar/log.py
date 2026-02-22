@@ -77,7 +77,7 @@ class Log:
             message = "       " * cls.levels + message
 
         if cls.is_active:
-            print(message, end = end)
+            print(message, end = end, flush = (not end == "\n"))
 
     @classmethod
     def line_break(cls):
