@@ -5,51 +5,51 @@ import h5py as h5
 import cedar
 
 
-# def add_upwind_ghost_cell(array: np.ndarray) -> np.ndarray:
-#     """
-#     Prepend an upwind ghost cell to a 1D array.
+def add_upwind_ghost_cell(array: np.ndarray) -> np.ndarray:
+    """
+    Prepend an upwind ghost cell to a 1D array.
 
-#     The ghost cell value is set equal to the first interior cell,
-#     corresponding to a zero-gradient (Neumann) upwind boundary condition.
+    The ghost cell value is set equal to the first interior cell,
+    corresponding to a zero-gradient (Neumann) upwind boundary condition.
 
-#     Parameters
-#     ----------
-#     array : ndarray
-#         Input array representing cell-centered values.
+    Parameters
+    ----------
+    array : ndarray
+        Input array representing cell-centered values.
 
-#     Returns
-#     -------
-#     ndarray
-#         Array with one additional element prepended.
-#     """
-#     return np.insert(array, 0, array[0])
+    Returns
+    -------
+    ndarray
+        Array with one additional element prepended.
+    """
+    return np.insert(array, 0, array[0])
 
-# def churchill(eps: float, Dh: float, Re: np.ndarray) -> np.ndarray:
-#     """
-#     Compute the Darcy friction factor using the Churchill correlation.
+def churchill(eps: float, Dh: float, Re: np.ndarray) -> np.ndarray:
+    """
+    Compute the Darcy friction factor using the Churchill correlation.
 
-#     This correlation is valid for both laminar and turbulent flow
-#     and smoothly transitions between regimes.
+    This correlation is valid for both laminar and turbulent flow
+    and smoothly transitions between regimes.
 
-#     Parameters
-#     ----------
-#     eps : float
-#         Surface roughness.
-#     Dh : float
-#         Hydraulic diameter.
-#     Re : ndarray
-#         Reynolds number.
+    Parameters
+    ----------
+    eps : float
+        Surface roughness.
+    Dh : float
+        Hydraulic diameter.
+    Re : ndarray
+        Reynolds number.
 
-#     Returns
-#     -------
-#     ndarray
-#         Darcy friction factor.
-#     """
-#     a = (2.457*np.log(1/((7/Re)**0.9 + (0.27*eps/Dh))))**16
-#     b = (37530/Re)**16
+    Returns
+    -------
+    ndarray
+        Darcy friction factor.
+    """
+    a = (2.457*np.log(1/((7/Re)**0.9 + (0.27*eps/Dh))))**16
+    b = (37530/Re)**16
 
-#     f = 8*((8/Re)**12 + (1/((a+b)**1.5)))**(1/12)
-#     return f
+    f = 8*((8/Re)**12 + (1/((a+b)**1.5)))**(1/12)
+    return f
 
 def format_computation_time(duration: float) -> str:
     """
@@ -180,25 +180,25 @@ def MAPE(val, ref) -> float:
 
     return float(np.sum(np.abs((val - ref) / ref) * 100) / val.size)
 
-# def prandtl(k: np.ndarray, cp: np.ndarray, mu: np.ndarray) -> np.ndarray:
-#     """
-#     Compute the Prandtl number.
+def prandtl(k: np.ndarray, cp: np.ndarray, mu: np.ndarray) -> np.ndarray:
+    """
+    Compute the Prandtl number.
 
-#     Parameters
-#     ----------
-#     k : float
-#         Thermal conductivity.
-#     cp : float
-#         Specific heat at constant pressure.
-#     mu : float
-#         Dynamic viscosity.
+    Parameters
+    ----------
+    k : float
+        Thermal conductivity.
+    cp : float
+        Specific heat at constant pressure.
+    mu : float
+        Dynamic viscosity.
 
-#     Returns
-#     -------
-#     float
-#         Prandtl number.
-#     """
-#     return cp * mu / k
+    Returns
+    -------
+    float
+        Prandtl number.
+    """
+    return cp * mu / k
 
 def print_vtkhdf(file: str):
     try:
@@ -250,91 +250,70 @@ def residual(A: np.ndarray, b: np.ndarray, x: np.ndarray) -> float:
     return np.linalg.norm(A @ x - b) / np.linalg.norm(b)
 
 
-# def reynolds(rho: np.ndarray, u: np.ndarray, L: np.ndarray, mu: np.ndarray) -> np.ndarray:
-#     """
-#     Compute the Reynolds number.
+def reynolds(rho: np.ndarray, u: np.ndarray, L: np.ndarray, mu: np.ndarray) -> np.ndarray:
+    """
+    Compute the Reynolds number.
 
-#     Parameters
-#     ----------
-#     rho : ndarray
-#         Fluid density.
-#     u : ndarray
-#         Flow velocity.
-#     L : ndarray
-#         Characteristic length.
-#     mu : ndarray
-#         Dynamic viscosity.
+    Parameters
+    ----------
+    rho : ndarray
+        Fluid density.
+    u : ndarray
+        Flow velocity.
+    L : ndarray
+        Characteristic length.
+    mu : ndarray
+        Dynamic viscosity.
 
-#     Returns
-#     -------
-#     ndarray
-#         Reynolds number.
-#     """
-#     return rho * u * L / mu
-
-
-# def P_to_P0(P, u, rho):
-#     """
-#     Convert static pressure to stagnation pressure.
-
-#     Parameters
-#     ----------
-#     P : float
-#         Static pressure.
-#     u : float
-#         Flow velocity.
-#     rho : float
-#         Fluid density.
-
-#     Returns
-#     -------
-#     float
-#         Stagnation pressure.
-#     """
-#     return P + 0.5 * rho * u**2
+    Returns
+    -------
+    ndarray
+        Reynolds number.
+    """
+    return rho * u * L / mu
 
 
-# def P0_to_P(P0: float, T: float, u: float, fluid: cedar.base.Fluid):
-#     """
-#     Convert stagnation pressure to static pressure via fixed-point iteration.
+def P_to_P0(P: float, u: float, rho: float) -> float:
+    """
+    Convert static pressure to stagnation pressure.
 
-#     Density is evaluated using the provided fluid model.
+    Parameters
+    ----------
+    P : float
+        Static pressure.
+    u : float
+        Flow velocity.
+    rho : float
+        Fluid density.
 
-#     Parameters
-#     ----------
-#     P0 : float
-#         Stagnation pressure.
-#     T : float
-#         Static temperature.
-#     u : float
-#         Flow velocity.
-#     fluid : cedar.base.Fluid
-#         Fluid property model.
+    Returns
+    -------
+    float
+        Stagnation pressure.
+    """
+    return P + 0.5 * rho * u**2
 
-#     Returns
-#     -------
-#     float
-#         Static pressure.
 
-#     Notes
-#     -----
-#     Iteration terminates when convergence tolerance is met or
-#     an error is raised if convergence fails.
-#     """
-#     P = P0
+def P0_to_P(P0: float, u: float, rho: float) -> float:
+    """
+    Convert stagnation pressure to static pressure.
 
-#     for _ in range(100):
-#         P_prev = P
-#         rho = fluid.rho_from_T_P(T, P)
-#         P = P0 - 0.5 * rho * u**2
+    Parameters
+    ----------
+    P0 : float
+        Stagnation pressure.
+    u : float
+        Flow velocity.
+    rho : float
+        Fluid density.
 
-#         if abs(P - P_prev) <= 1:
-#             return P
+    Returns
+    -------
+    float
+        Static pressure.
+    """
 
-#     cedar.Log.error(
-#         f"P0_to_P did not converge: P0={P0:.0f}, T={T:.1f}, u={u:.1f}, "
-#         f"fluid={fluid.__class__.__name__}"
-    # )
+    return P0 - 0.5 * rho * u**2
 
 def sort3(values):
     """
@@ -354,63 +333,46 @@ def sort3(values):
     
     return (a, b, c)
 
-# def T_to_T0(T: float, u: float, cp: float):
-#     """
-#     Convert static temperature to stagnation temperature.
+def T_to_T0(T: float, u: float, cp: float):
+    """
+    Convert static temperature to stagnation temperature.
 
-#     Parameters
-#     ----------
-#     T : float
-#         Static temperature.
-#     u : float
-#         Flow velocity.
-#     cp : float
-#         Specific heat at constant pressure.
+    Parameters
+    ----------
+    T : float
+        Static temperature.
+    u : float
+        Flow velocity.
+    cp : float
+        Specific heat at constant pressure.
 
-#     Returns
-#     -------
-#     float
-#         Stagnation temperature.
-#     """
-#     return T + (0.5 * u**2) / cp
+    Returns
+    -------
+    float
+        Stagnation temperature.
+    """
+    return T + (0.5 * u**2) / cp
 
 
-# def T0_to_T(T0: float, P: float, u: float, fluid: cedar.base.Fluid):
-#     """
-#     Convert stagnation temperature to static temperature via iteration.
+def T0_to_T(T0: float, u: float, cp: float):
+    """
+    Convert stagnation temperature to static.
 
-#     Specific heat is evaluated using the provided fluid properties object.
+    Parameters
+    ----------
+    T0 : float
+        Stagnation temperature.
+    u : float
+        Flow velocity.
+    cp : float
+        Specific heat capacity.
 
-#     Parameters
-#     ----------
-#     T0 : float
-#         Stagnation temperature.
-#     P : float
-#         Static pressure.
-#     u : float
-#         Flow velocity.
-#     fluid : cedar.base.Fluid
-#         Fluid properties.
-
-#     Returns
-#     -------
-#     float
-#         Static temperature.
-#     """
-#     T = T0
-
-#     for _ in range(100):
-#         T_prev = T
-#         cp = fluid.cp_from_T_P(T, P)
-#         T = T0 - (0.5 * u**2) / cp
-
-#         if abs(T - T_prev) <= 1e-6:
-#             return T
-
-#     cedar.Log.error(
-#         f"T0_to_T did not converge: T0={T0:.0f}, P={P:.1f}, u={u:.1f}, "
-#         f"fluid={fluid.__class__.__name__}"
-#     )
+    Returns
+    -------
+    float
+        Static temperature.
+    """
+    return T0 - (0.5 * u**2) / cp
 
 
 def tetra_vol(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray, p4: np.ndarray) -> float:

@@ -13,9 +13,5 @@ class Source(ABC):
         pass
 
     @abstractmethod
-    def iterate(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        pass
-
-    @abstractmethod
     def step(self, t: float):
         pass
