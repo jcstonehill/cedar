@@ -248,10 +248,3 @@ class Flow(cedar.Model):
                 self.fluid.k_from_T_P(T, P),
                 self.fluid.cp_from_T_P(T, P),
                 self.fluid.mu_from_T_P(T, P))
-    
-    def _T(self, e, P, u, cp):
-        
-
-        T[0] = cedar.functions.T0_to_T(self.inlet.T0, u[0], cp[0])
-
-        T[1:] = self.fluid.T_from_e_P(e[1:], P[1:])
