@@ -25,7 +25,7 @@ class HeatTransferBC(cedar.BC, ABC):
         pass
 
     @abstractmethod
-    def iterate(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         pass
 
     @abstractmethod
@@ -46,7 +46,7 @@ class AdiabaticBC(HeatTransferBC):
     def initialize(self, t_start: float):
         pass
 
-    def iterate(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         LHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
         RHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
 
@@ -79,7 +79,7 @@ class FixedTemperatureBC(HeatTransferBC):
 
         self.step(t_start)
 
-    def iterate(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         LHS = k*self._area_over_L
         RHS = k*self._area_over_L * self._value
 
@@ -156,7 +156,7 @@ class HeatSource(cedar.Source):
 
         self.step(t_start)
 
-    def iterate(self):
+    def Qdot(self):
         return np.copy(self._value)
 
     def step(self, t: float):
@@ -239,7 +239,7 @@ class HeatTransfer(cedar.Model):
     def iterate(self, res_reduc: float, dt: float) -> float:
         T = self.T.as_continuous_cell_value()
 
-        Qdot = self.source.iterate()
+        Qdot = self.source.Qdot()
         volQdot = Qdot / self.mesh.cell_vols
 
         k_cell = self.k_by_cell(T)
@@ -356,7 +356,7 @@ class HeatTransfer(cedar.Model):
 
             c1 = self.mesh.face_cells_i[boundary_i, 0]
 
-            LHS, RHS = self.bc[boundary].iterate(T_boundary, k_boundary)
+            LHS, RHS = self.bc[boundary].matrix_contribution(T_boundary, k_boundary)
 
             rows.extend(c1); cols.extend(c1); data.extend(LHS)
             b[c1] += RHS
