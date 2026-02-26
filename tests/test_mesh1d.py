@@ -8,15 +8,15 @@ import cedar   # adjust import as needed
 def simple_mesh() -> cedar.Mesh1D:
     mesh = cedar.Mesh1D(
         N_cells=4,
+        L = 4.0,
         region="domain",
         start_boundary="left",
         end_boundary="right",
         start=np.array([0.0, 0.0, 0.0]),
-        end=np.array([4.0, 0.0, 0.0]),
+        basis = "x"
     )
     mesh.build()
     return mesh
-
 
 def test_basic_attributes(simple_mesh):
     mesh: cedar.Mesh1D = simple_mesh

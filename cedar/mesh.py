@@ -71,24 +71,34 @@ class Mesh0D(Mesh):
         raise NotImplementedError()
 
 class Mesh1D(Mesh):
+    basis_vec = {
+        "x"  : np.array([ 1,  0,  0]),
+        "y"  : np.array([ 0,  1,  0]),
+        "z"  : np.array([ 0,  0,  1]),
+        "-x" : np.array([-1,  0,  0]),
+        "-y" : np.array([ 0, -1,  0]),
+        "-z" : np.array([ 0,  0, -1])
+    }
+
     def __init__(
             self,
             N_cells: int,
+            L: float,
             region: str,
             start_boundary: str,
             end_boundary: str,
             start: tuple[float],
-            end: tuple[float],
             basis: str = "z"
         ):
         self.id: int = next(Mesh.id)
         self.dim: int = 1
 
-        self.start = start
-        self.end = end
+        self.L = L
+        self.start = np.array(start)
+        self.end = start + L*self.basis_vec[basis]
         self.basis = basis
 
-        self.ds = np.linalg.norm(end-start)/N_cells
+        self.ds = L/N_cells
 
         self.regions: list[str] = [region]
         self.boundaries: list[str] = [start_boundary, end_boundary]
