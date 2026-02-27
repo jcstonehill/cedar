@@ -496,15 +496,14 @@ class HeatTransfer(cedar.Model):
         :param k_cell: Cell thermal conductivity.
         :return: Face thermal conductivity.
         """
-        k_face = np.empty(self.mesh.N_faces)
+        k_face = np.empty(self.mesh.N_faces, dtype = np.float64)
 
         f = self.mesh.face_is_interior
         c1 = self.mesh.face_cells_i[f, 0]
         c2 = self.mesh.face_cells_i[f, 1]
-        d1 = self.mesh.face_d[f, 0]
-        d2 = self.mesh.face_d[f, 1]
+        w = self.mesh.face_w[f]
 
-        k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
+        k_face[f] = self._k_face_interior(k_cell[c1], k_cell[c2], w)
 
         # boundary faces
         bf = ~f
@@ -591,3 +590,6 @@ class HeatTransfer(cedar.Model):
         A = coo_matrix((data, (rows, cols)), shape=(N, N)).tocsr()
 
         return A, b
+
+    def _k_face_interior(self, k1, k2, w):
+        return 1/((1-w)/k1 + w/k2)

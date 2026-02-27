@@ -35,11 +35,13 @@ class Mesh(ABC):
         self.face_cells_i: np.ndarray = []
         self.face_is_interior: np.ndarray = []
 
-        self.cell_centers: np.ndarray = []
-        self.face_centers: np.ndarray = []
         self.face_n: np.ndarray = []
         self.face_d: np.ndarray = []
+        self.face_w: np.ndarray = []
 
+        self.cell_centers: np.ndarray = []
+        self.face_centers: np.ndarray = []
+        
         self.region_i: dict[str, np.ndarray] = {}
         self.region_N: dict[str, int] = {}
 
@@ -116,11 +118,13 @@ class Mesh1D(Mesh):
         self.face_cells_i: np.ndarray = []
         self.face_is_interior: np.ndarray = []
 
-        self.cell_centers: np.ndarray = []
-        self.face_centers: np.ndarray = []
         self.face_n: np.ndarray = []
         self.face_d: np.ndarray = []
+        self.face_w: np.ndarray = []
 
+        self.cell_centers: np.ndarray = []
+        self.face_centers: np.ndarray = []
+        
         self.region_i: dict[str, np.ndarray] = {}
         self.region_N: dict[str, int] = {}
 
@@ -154,6 +158,14 @@ class Mesh1D(Mesh):
         for i in range(self.N_cells):
             self.cell_centers[i][:] = self.start + delta*self.ds*(0.5+i)
         self.face_centers: np.ndarray = np.copy(self.pts) # For 1D, points and faces are the same thing
+
+        self.face_n: np.ndarray = np.full((self.N_faces, 3), self.basis_vec[self.basis], dtype = np.float64)
+        self.face_d: np.ndarray = np.full((self.N_faces, 2), self.ds/2, dtype = np.float64)
+        self.face_d[0][1] = 0
+        self.face_d[-1][1] = 0
+        self.face_w: np.ndarray = np.full(self.N_faces, 0.5)
+        self.face_w[0] = 1
+        self.face_w[-1] = 1
 
         self.region_i: dict[str, np.ndarray] = {self.regions[0] : np.arange(self.N_cells)}
         self.region_N: dict[str, int] = {self.regions[0] : self.N_cells}
@@ -224,6 +236,10 @@ class Mesh3D(Mesh):
         self.face_cells_i: np.ndarray = []
         self.face_is_interior: np.ndarray = []
 
+        self.face_n: np.ndarray = []
+        self.face_d: np.ndarray = []
+        self.face_w: np.ndarray = []
+
         self.cell_centers: np.ndarray = []
         self.face_centers: np.ndarray = []
 
@@ -236,8 +252,6 @@ class Mesh3D(Mesh):
         # Specific to 3D
         self.cell_vols: np.ndarray = []
         self.face_areas: np.ndarray = []
-        self.face_n: np.ndarray = []
-        self.face_d: np.ndarray = []
         self.region_vol: dict[str, float] = {}
         self.boundary_area: dict[str, float] = {}
 
@@ -361,6 +375,8 @@ class Mesh3D(Mesh):
         d2[~self.face_is_interior] = 0
 
         self.face_d = np.stack((d1, d2), axis=1).astype(np.float64)
+
+        self.face_w = 1 - d1/(d1+d2)
 
         for boundary in self.boundaries:
             self.boundary_area[boundary] = np.sum(self.face_areas[self.boundary_i[boundary]])
