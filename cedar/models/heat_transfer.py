@@ -8,55 +8,146 @@ import cedar
 
 
 class HeatTransferBC(cedar.BC, ABC):
+    """
+    Abstract base class for :class:`cedar.HeatTransfer` boundary conditions.
+
+    Defines the interface required for coupling boundary conditions into
+    the heat transfer solver.
+    """
     def __init__(self):
+        """
+        Initialize the boundary condition base class.
+        """
         self.boundary: str = None
         self.mesh: cedar.Mesh = None
 
     @abstractmethod
     def boundary_B(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
+        """
+        Compute the heat transfer through boundary.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Heat transfer through boundary.
+        """
         pass
 
     @abstractmethod
     def boundary_T(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
+        """
+        Compute the boundary temperature values.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Boundary temperature values.
+        """
         pass
 
     @abstractmethod
     def initialize(self, t_start: float):
+        """
+        Initialize geometry- or time-dependent boundary data.
+
+        :param t_start: Simulation start time.
+        """
         pass
 
     @abstractmethod
     def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Return matrix contributions for A, b assembly.
+
+        :param T: Boundary temperature values.
+        :param k: Face thermal conductivity.
+        :return: (LHS, RHS) diagonal and source term contributions.
+        """
         pass
 
     @abstractmethod
     def step(self, t: float):
+        """
+        Advance the boundary condition in time.
+
+        :param t: Current simulation time.
+        """
         pass
 
 class AdiabaticBC(HeatTransferBC):
+    """
+    Adiabatic (zero-flux) boundary condition for :class:`cedar.HeatTransfer`.
+
+    Enforces zero normal heat flux across the boundary.
+    """
     def __init__(self):
+        """
+        Initialize the adiabatic boundary condition.
+        """
         self.boundary: str = None
         self.mesh: cedar.Mesh3D = None
 
     def boundary_B(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
+        """
+        Compute the heat transfer through boundary.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Heat transfer through boundary.
+        """
         return np.zeros_like(T_cell)
 
     def boundary_T(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
-        return T_cell
+        """
+        Temperature at boundary.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Zero source term contribution.
+        """
+        return np.copy(T_cell)
 
     def initialize(self, t_start: float):
+        """
+        Initialize the boundary condition.
+
+        No geometry- or time-dependent setup is required.
+        """
         pass
 
     def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Return matrix contributions for A, b assembly.
+
+        :param T: Boundary temperature values.
+        :param k: Face thermal conductivity.
+        :return: (LHS, RHS) diagonal and source term contributions.
+        """
+
         LHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
         RHS = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
 
         return LHS, RHS
 
     def step(self, t: float):
+        """
+        Update the boundary temperature for the current time.
+
+        :param t: Current simulation time.
+        """
         pass
 
 class FixedTemperatureBC(HeatTransferBC):
+    """
+    Fixed-temperature (Dirichlet) boundary condition for :class:`cedar.HeatTransfer`.
+
+    Enforces a prescribed boundary temperature, optionally varying in space
+    and time.
+    """
     def __init__(self, T: float | Callable):
+        """
+        Initialize the fixed temperature boundary condition.
+
+        :param T: Boundary temperature value or callable T(x, y, z, t).
+        """
         self.boundary: str = None
         self.mesh: cedar.Mesh3D = None
 
@@ -66,12 +157,31 @@ class FixedTemperatureBC(HeatTransferBC):
         self._area_over_L: np.ndarray = None
 
     def boundary_B(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
+        """
+        Compute the heat transfer through boundary.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Heat transfer through boundary.
+        """
         return k*self._area_over_L*(T_cell-self._value)
 
     def boundary_T(self, T_cell: np.ndarray, k: np.ndarray) -> np.ndarray:
+        """
+        Temperature at boundary.
+
+        :param T_cell: Adjacent cell temperatures.
+        :param k: Face thermal conductivity.
+        :return: Zero source term contribution.
+        """
         return self._value
 
     def initialize(self, t_start: float):
+        """
+        Initialize mesh-dependent boundary quantities.
+
+        :param t_start: Simulation start time.
+        """
         self._area_over_L = np.zeros(self.mesh.boundary_N[self.boundary], dtype=np.float64)
 
         for i, face_i in enumerate(self.mesh.boundary_i[self.boundary]):
@@ -80,12 +190,24 @@ class FixedTemperatureBC(HeatTransferBC):
         self.step(t_start)
 
     def matrix_contribution(self, T: np.ndarray, k: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Return matrix contributions for A, b assembly.
+
+        :param T: Boundary temperature values.
+        :param k: Face thermal conductivity.
+        :return: (LHS, RHS) diagonal and source term contributions.
+        """
         LHS = k*self._area_over_L
         RHS = k*self._area_over_L * self._value
 
         return LHS, RHS
 
     def step(self, t: float):
+        """
+        Update the boundary temperature for the current time.
+
+        :param t: Current simulation time.
+        """
         if callable(self.T):
             self._value = self._evaluate_func(t)
 
@@ -93,6 +215,12 @@ class FixedTemperatureBC(HeatTransferBC):
             self._value = np.full(self.mesh.boundary_N[self.boundary], self.T)
     
     def _evaluate_func(self, t: float):
+        """
+        Evaluate spatially and temporally varying temperature function.
+
+        :param t: Current simulation time.
+        :return: Boundary temperature values.
+        """
         values = np.zeros(self.mesh.boundary_N[self.boundary], dtype = np.float64)
 
         for i, face_i in enumerate(self.mesh.boundary_i[self.boundary]):
@@ -105,7 +233,20 @@ class FixedTemperatureBC(HeatTransferBC):
         return values
 
 class HeatSource(cedar.Source):
+    """
+    Source for :class:`cedar.HeatTransfer`
+
+    Distributes a total or volumetric heat input over the mesh using an
+    optional spatial shape function and optional time dependence.
+    """
     def __init__(self, Qdot: float | dict[str, float] | Callable = None, volQdot: float | dict[str, float] | Callable = None, shape_func: Callable = None):
+        """
+        Initialize the heat source.
+
+        :param Qdot: Total heat input (global, per-region, or time-dependent).
+        :param volQdot: Volumetric heat input (global, per-region, or time-dependent).
+        :param shape_func: Spatial weighting function f(x, y, z) or per-region mapping.
+        """
         self.Qdot = Qdot
         self.volQdot = volQdot
         self.shape_func = shape_func
@@ -117,12 +258,18 @@ class HeatSource(cedar.Source):
         self.w: np.ndarray = None
 
     def initialize(self, t_start: float):
+        """
+        Initialize the source distribution and evaluate initial value.
+
+        :param t_start: Simulation start time.
+        """
+        # Spatial weighting (normalized)
         self.w = self._get_weighting()
 
-        # NOW CALCULATE VALUE USING SHAPE AND QDOT
+        # Allocate cell-wise heat source
         self._value = np.zeros(self.mesh.N_cells, dtype = np.float64)
 
-        # If volQdot is given, convert it to Qdot
+        # Convert volumetric source to total source if needed
         if self.volQdot is not None:
             if isinstance(self.volQdot, dict):
                 self.Qdot = {}
@@ -136,6 +283,7 @@ class HeatSource(cedar.Source):
             else:
                 self.Qdot = self.volQdot * sum(self.mesh.region_vol.values())
 
+        # Region-wise total heat input
         if isinstance(self.Qdot, dict):
             for region in self.mesh.regions:
                 if region not in self.Qdot:
@@ -148,22 +296,39 @@ class HeatSource(cedar.Source):
 
                 self._value[region_i] = self.Qdot[region] * w
 
+        # Time-dependent total heat input
         elif callable(self.Qdot):
             self.Qdot_func = self.Qdot
 
+        # Static global total heat input
         else:
             self._value = self.Qdot * self.w
 
         self.step(t_start)
 
-    def Qdot(self):
+    def get_Qdot(self):
+        """
+        Return the current cell-wise heat source.
+
+        :return: Heat source per cell.
+        """
         return np.copy(self._value)
 
     def step(self, t: float):
+        """
+        Update the source value for the current time.
+
+        :param t: Current simulation time.
+        """
         if self.Qdot_func is not None:
             self._value = self.Qdot_func(t)*self.w
 
     def _get_weighting(self):
+        """
+        Compute normalized spatial weighting over the mesh.
+
+        :return: Cell-wise weighting array summing to one.
+        """
         # CALCULATE SHAPE
         if self.shape_func is None:
             w = np.ones(self.mesh.N_cells, dtype = np.float64)/self.mesh.N_cells
@@ -196,6 +361,13 @@ class HeatSource(cedar.Source):
         return w / np.sum(w)
         
 class HeatTransfer(cedar.Model):
+    """
+    Heat conduction model using FVM.
+
+    Solves the heat equation on a 3D mesh with region-dependent materials, heat
+    sources, and boundary conditions.
+    """
+
     def __init__(
             self,
             mesh: cedar.Mesh3D = None,
@@ -203,6 +375,14 @@ class HeatTransfer(cedar.Model):
             bc: dict[str, cedar.BC] = {},
             source: HeatSource = HeatSource(Qdot = 0)
     ):
+        """
+        Initialize the heat transfer model.
+
+        :param mesh: Computational mesh.
+        :param materials: Mapping of region name to material model.
+        :param bc: Mapping of boundary name to boundary condition.
+        :param source: Volumetric heat source model.
+        """
         self.mesh: cedar.Mesh3D = mesh
         self.materials: dict[str, cedar.Material] = materials
         self.bc: dict[str, cedar.HeatTransferBC] = bc
@@ -217,7 +397,13 @@ class HeatTransfer(cedar.Model):
 
         self.B: cedar.Field = self.add_field("B", is_on_regions = False, is_on_boundaries = True)
 
-    def cp_by_cell(self, T):
+    def cp_by_cell(self, T: np.ndarray):
+        """
+        Compute cell-wise specific heat capacity.
+
+        :param T: Cell temperature array.
+        :return: Specific heat per cell.
+        """
         cp = np.empty(self.mesh.N_cells)
 
         for region, mask in self.mesh.region_i.items():
@@ -227,6 +413,11 @@ class HeatTransfer(cedar.Model):
         return cp
 
     def initialize(self, t_start: float):
+        """
+        Perform one-time initialization before solve.
+
+        :param t_start: Simulation start time.
+        """
         self._area_over_L: np.ndarray = self.mesh.face_areas / np.sum(self.mesh.face_d, axis=1)
 
         for boundary in self.mesh.boundaries:
@@ -237,9 +428,16 @@ class HeatTransfer(cedar.Model):
         self._mass = self._rho*self.mesh.cell_vols
 
     def iterate(self, res_reduc: float, dt: float) -> float:
+        """
+        Advance the solution by one nonlinear iteration.
+
+        :param res_reduc: Target relative residual reduction.
+        :param dt: Time step size.
+        :return: Residual norm.
+        """
         T = self.T.as_continuous_cell_value()
 
-        Qdot = self.source.Qdot()
+        Qdot = self.source.get_Qdot()
         volQdot = Qdot / self.mesh.cell_vols
 
         k_cell = self.k_by_cell(T)
@@ -273,7 +471,13 @@ class HeatTransfer(cedar.Model):
 
         return res
 
-    def k_by_cell(self, T):
+    def k_by_cell(self, T: np.ndarray):
+        """
+        Compute cell-wise thermal conductivity.
+
+        :param T: Cell temperature array.
+        :return: Thermal conductivity per cell.
+        """
         k = np.empty(self.mesh.N_cells)
         
         for region, mask in self.mesh.region_i.items():
@@ -283,6 +487,15 @@ class HeatTransfer(cedar.Model):
         return k
 
     def k_by_face(self, k_cell):
+        """
+        Compute face thermal conductivity from adjacent cells.
+
+        Interior faces use harmonic averaging; boundary faces use the
+        adjacent cell value.
+
+        :param k_cell: Cell thermal conductivity.
+        :return: Face thermal conductivity.
+        """
         k_face = np.empty(self.mesh.N_faces)
 
         f = self.mesh.face_is_interior
@@ -300,6 +513,11 @@ class HeatTransfer(cedar.Model):
         return k_face
 
     def rho_by_cell(self):
+        """
+        Compute cell-wise density.
+
+        :return: Density per cell.
+        """
         rho = np.empty(self.mesh.N_cells)
         
         for region, mask in self.mesh.region_i.items():
@@ -309,6 +527,15 @@ class HeatTransfer(cedar.Model):
         return rho
 
     def _A_b(self, k_face, Qdot, cp, dt):
+        """
+        Assemble the linear system A T = b.
+
+        :param k_face: Face thermal conductivity.
+        :param Qdot: Cell heat source.
+        :param cp: Cell specific heat capacity.
+        :param dt: Time step size.
+        :return: Sparse matrix A and RHS vector b.
+        """
         N = self.mesh.N_cells
         b = Qdot
 

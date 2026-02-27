@@ -24,9 +24,13 @@ cedar.models
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: class.rst
+   :template: childclass.rst
 
    cedar.HeatTransfer
+   cedar.HeatTransferBC
+   cedar.HeatSource
+   cedar.FixedTemperatureBC
+   cedar.AdiabaticBC
 
 cedar.benchmarks
 ----------------

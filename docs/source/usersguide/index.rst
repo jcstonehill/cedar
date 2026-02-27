@@ -9,3 +9,4 @@ aspects of using Cedar.
    :maxdepth: 1
 
    what_is_cedar.rst
+   mesh_generation.rst
