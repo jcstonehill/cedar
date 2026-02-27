@@ -36,6 +36,7 @@ makes it both easy to use and flexible to extend with new physics models.
 
    installation
    usersguide/index
+   models/index
    examples/index
    theory/index
    materials/index

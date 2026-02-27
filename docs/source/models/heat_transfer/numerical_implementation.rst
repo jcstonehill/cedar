@@ -21,6 +21,11 @@ Rewrite in terms of flux.
 
 Where
 
+| :math:`\rho` is mass density :math:`[\frac{kg}{m^3}]`
+| :math:`c_p` is specific heat capacity :math:`[\frac{J}{kg K}]`
+| :math:`T` is temperature :math:`[K]`
+| :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
+| :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
 | :math:`J` is the flux :math:`[\frac{W}{m^2}]`
 
 Now, we separate the computational domain into discrete volumes, known as
@@ -55,17 +60,20 @@ approximating these values depend on the condition at the face.
 1. Internal Face
     If a face is shared by two cells, then it is an internal face.
 
-    The thermal conductivity at the face is found by interpolation between
-    the two cell values of thermal conductivity.
-    
-    For internal faces, the thermal conductivity at the face is found by
-    interpolation between the two cell values of thermal conductivity.
+    The thermal conductivity at an internal face is derived with consideration
+    of flux balance at a face. This is especially important for internal faces
+    where the two connecting cells have dissimilar material properties.
+
+    The derivation starts by considering different approximations to the heat
+    flux through the face. To ensure flux balance, the face flux calculated from
+    cell centered values must be the same as the flux found when approaching the
+    face from each side.
 
     .. math::
-        w_f = \frac{1}{1+\frac{d_1}{d_2}}
-k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
+        J_f = k_f \frac{T_1 - T_2}{\delta_1 + \delta_2} = k_1 \frac{T_1 - T_f}{\delta_1} = k_2 \frac{T_f - T_2}{\delta_2}
+
     .. math::
-        k_f = w_f k_1 + (1-w_f) k_2
+        \delta = d \cdot \hat{n_f}
 
     Where
 
@@ -73,25 +81,60 @@ k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
     | :math:`2` denotes the second cell that uses the face :math:`f`
     | :math:`d` is the distance from the cell center to the face center :math:`f`
 
-    .. note::
-        The order of the first and second cell is completely arbitrary and is determined by the mesh generation software and the order they're read in by the mesh reader.
-
-    Next, we calculate the characteristic transport distance. This comes
-    from dotting the vector pointing from one cell center to another with
-    the normal of the face.
+    Rearrange to express temperature change in terms of heat flux.
 
     .. math::
-        L = (C_2 - C_1) \cdot \hat{n_f}
+
+        T_1 - T_f = J_f \frac{\delta_1}{k_1}
+
+    .. math::
+
+        T_f - T_2 = J_f \frac{\delta_2}{k_2}
+
+    Add together.
+
+    .. math::
+
+        T_1 - T_2 = J_f \left( \frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}\right)
+
+    Now, substitute this expression for :math:`T_1-T_2` into the expression of
+    heat flux using cell centered values.
+
+    .. math::
+    
+        J_f = k_f \frac{J_f \left( \frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}\right)}{\delta_1 + \delta_2}
+
+    Assume heat flux is non zero on internal faces.
+
+    .. math::
+    
+        1 = k_f \frac{\frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}}{\delta_1 + \delta_2}
+
+    Rearrange.
+
+    .. math::
+
+        k_f = \frac{d_1 + d_2}{\frac{d_1}{k_1}+\frac{d_2}{k_2}}
+
+    Now, define a face weighting which is a function of geometry only.
+
+    .. math::
+        w_f = \frac{1}{1+\frac{d_1}{d_2}}
 
     Where
 
-    | :math:`C` is the cell center
-    | :math:`n` is the normal vector of the face
+    | :math:`w` is geometric weighting
+
+    Rewrite :math:`k_f` expression in terms of :math:`w`.
+
+    .. math::
+
+        \boxed{k_f = \frac{1}{\frac{1-w_f}{k_1} + \frac{w_f}{k_2}}}
 
     Now we can define the temperature gradient.
 
     .. math::
-        \nabla T = \frac{T_j - T_i}{L}
+        \boxed{\nabla T = \frac{T_j - T_i}{\delta_1 + \delta_2}}
 
     Which gives us the flux through an internal face.
 
@@ -126,7 +169,7 @@ k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
         This is the default treatment of boundary faces unless a different boundary condition is set.
 
     .. note::
-        Since :math:`J` of adiabatic faces are not a function of any cell temperatures, they do not contribute to the matrix form.
+        Since :math:`J` of adiabatic faces are not a function of any cell temperatures, they do not contribute to the linear A-b matrices.
 
 3. Boundary Face: Known Value (Dirichlet) 
     The flux is computed using the temperature gradient calculated from a
@@ -146,16 +189,18 @@ k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
         k_f = k_i
 
     The temperature gradient is calculated in a similar fashion to internal
-    faces with some key changes. The characteristic length, :math:`L` is
-    calculated using the vector pointing from the face center to the cell
-    center instead of from one cell center to a neighbors cell center. Also,
-    the temperature value comes from the boundary condition instead of a
-    neighboring cell.
+    faces with some key changes. The characteristic length is now
+    :math:`\delta_i` instead of :math:`\delta_1 + \delta_2`. In other words, the
+    characteristic length is effectively the distance from the cell center to
+    the face center, rather than from the cell center to the neighboring cell
+    center.
+    
+    The temperature value comes from the boundary condition
+    instead of a neighboring cell.
 
     .. math::
-        L = (C_f - C_1) \cdot \hat{n_f}
 
-        \nabla T = \frac{T_f - T_i}{L}
+        \nabla T = \frac{T_f - T_i}{\delta_i}
 
 4. Boundary Face: Known Flux (Neumann)
     The face flux is directly known.
@@ -173,9 +218,8 @@ k_face[f] = k_cell[c1]*k_cell[c2] / ((k_cell[c1]*d2 + k_cell[c2]*d1)/(d1+d2))
     with a Dirichlet boundary condition.
 
     .. math::
-        L = (C_f - C_1) \cdot \hat{n_f}
 
-        \nabla T = \frac{T_f - T_i}{L}
+        \nabla T = \frac{T_f - T_i}{\delta_i}
     
 Temporal Discretization
 -----------------------

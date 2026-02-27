@@ -4,9 +4,9 @@ Heat Transfer
 .. toctree::
    :maxdepth: 1
 
-   heat_transfer/implementation.rst     
+   numerical_implementation.rst     
 
-The :class:`Heat Transfer` model solves the heat conduction equation on a 3D mesh. 
+The :class:`cedar.HeatTransfer` model solves the heat conduction equation on a 3D mesh. 
 
 Heat conduction is the process by which thermal energy moves through a material
 due to microscopic interactions between its atoms. When one area is hotter
