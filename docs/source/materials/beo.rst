@@ -1,20 +1,28 @@
+
 Beryllium Oxide
-===============
+====================================
 
-``cedar.materials.BeO()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-3010 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 3010.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 280.8
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 977.3
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   200 \le T \le 2301
 
 .. figure:: img/beo_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 200.0 K \le T \le 2301.0 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   55 \le T \le 2820
 
 .. figure:: img/beo_cp.png
    :scale: 100 %
@@ -36,9 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-SNP-HDBK-0008 SNP Material Property Handbook
-https://ntrs.nasa.gov/citations/20240004217
-
+.. math::
+   Valid Range: 55.0 K \le T \le 2820.0 K

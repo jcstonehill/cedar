@@ -1,20 +1,28 @@
+
 Uranium 10-Molybdenum Alloy
-===========================
+====================================
 
-``cedar.materials.U10Mo()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-(1-Porosity)*17150.0 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 17150.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 10.9
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 142.3
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   293.15 \le T \le 1073.15
 
 .. figure:: img/u10mo_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 293.1 K \le T \le 1073.2 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   373.15 \le T \le 1273.15
 
 .. figure:: img/u10mo_cp.png
    :scale: 100 %
@@ -36,9 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-D. E. Burkes, et. al., "Thermophysical Properties of U-10Mo Alloy," Idaho
-National Laboratory, Report INL/EXT-10-19373, Idaho Falls, ID, Nov. 2010.
-
+.. math::
+   Valid Range: 373.1 K \le T \le 1273.2 K

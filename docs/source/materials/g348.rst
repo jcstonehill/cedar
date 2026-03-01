@@ -1,20 +1,28 @@
+
 G-348 Graphite
-===============
+====================================
 
-``cedar.materials.G348()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-1860.35 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 1860.3
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 130.8
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 693.7
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   303.15 \le T \le 1273.15
 
 .. figure:: img/g348_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 303.1 K \le T \le 1273.2 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   200 \le T \le 3500
 
 .. figure:: img/g348_cp.png
    :scale: 100 %
@@ -36,14 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-D. M. McEligot, et. al., "Thermal Properties of G-348 Graphite,” Idaho
-National Laboratory, Report INL/EXT-16-38241, Idaho Falls, Idaho, May.
-2016.
-
-A. T. D. Butland, et. al., "The Specific Heat of Graphite: An Evaluation
-of Measurements," Journal of Nuclear Materials 49 (1973/74) 45-46, Jun.
-1973.
-
+.. math::
+   Valid Range: 200.0 K \le T \le 3500.0 K

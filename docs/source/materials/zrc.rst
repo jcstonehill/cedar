@@ -1,20 +1,28 @@
+
 Zirconium Carbide
-===========================
+====================================
 
-``cedar.materials.ZrC()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-6730.0 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 6730.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 26.3
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 358.6
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   100 \le T \le 2650
 
 .. figure:: img/zrc_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
-Specific Heat Capacity
---------------------
-
-Valid Temperature Range:
-
 .. math::
-   5 \le T \le 2788
+   Valid Range: 100.0 K \le T \le 2650.0 K
+
+Specific Heat Capacity
+----------------------
 
 .. figure:: img/zrc_cp.png
    :scale: 100 %
@@ -36,9 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-SNP-HDBK-0008 SNP Material Property Handbook
-https://ntrs.nasa.gov/citations/20240004217
-
+.. math::
+   Valid Range: 5.0 K \le T \le 2788.0 K

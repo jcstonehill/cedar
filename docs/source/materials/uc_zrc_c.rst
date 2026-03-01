@@ -1,20 +1,28 @@
+
 Uranium Zirconium Carbide Composite
-===================================
+====================================
 
-``cedar.materials.uc_zrc_c()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-6700 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 6700.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 90.0
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 448.2
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   300 \le T \le 2600
 
 .. figure:: img/uc_zrc_c_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 300.0 K \le T \le 2600.0 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   300 \le T \le 2800
 
 .. figure:: img/uc_zrc_c_cp.png
    :scale: 100 %
@@ -36,9 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-L. L. Lyon, “Performance of (U, Zr)C-Graphite (Composite) and of (U, Zr)C
-(Carbide) Fuel Elements in the Nuclear Furance 1 Rest Reactor,” Los Alamos
-National Laboratory, Report LA-5398-MS Vol 1, Los Alamos, NM, Sept. 1973.
+.. math::
+   Valid Range: 300.0 K \le T \le 2800.0 K

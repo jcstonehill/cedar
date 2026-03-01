@@ -1,20 +1,28 @@
+
 Uranium Dioxide
-===============
+====================================
 
-``cedar.materials.UO2()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-(1-Porosity)*10970 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 10970.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 6.3
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 234.7
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   500 \le T \le 3000
 
 .. figure:: img/uo2_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 500.0 K \le T \le 3000.0 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   298.15 \le T \le 3120
 
 .. figure:: img/uo2_cp.png
    :scale: 100 %
@@ -36,15 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-J. V. Miller, “Estimating Thermal Conductivity of CERMET Fuel Materials
-for Nuclear Reactor Application,” Lewis Research Center, Report NASA TND-3898,
-Cleveland, OH, Apr. 1967.
-https://ntrs.nasa.gov/citations/19670013537
-
-S. G. Popov, et. al., "Thermophysical Properties of MOX and UO2 Fuel
-Including the Effects of Radiation," Oak Ridge National Laboratory, Report
-ORNL/TM-2000/351, Oak Ridge, TN, Nov. 2000.
-
+.. math::
+   Valid Range: 298.1 K \le T \le 3120.0 K

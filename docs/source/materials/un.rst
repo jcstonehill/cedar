@@ -1,20 +1,28 @@
+
 Uranium Nitride
-===============
+====================================
 
-``cedar.materials.UN()``
+Room Temperature Properties
+---------------------------
 
-Density
--------
+.. list-table::
+   :header-rows: 1
 
-(1-Porosity)*14330 [kg/m3]
+   * - Property
+     - Value
+     - Units
+   * - Density
+     - 14330.0
+     - :math:`\frac{kg}{m^3}`
+   * - Thermal Conductivity
+     - 14.1
+     - :math:`\frac{W}{m-K}`
+   * - Specific Heat Capacity
+     - 188.1
+     - :math:`\frac{J}{kg-K}`
 
 Thermal Conductivity
 --------------------
-
-Valid Temperature Range:
-
-.. math::
-   10 \le T \le 2500
 
 .. figure:: img/un_k.png
    :scale: 100 %
@@ -22,13 +30,11 @@ Valid Temperature Range:
 
    Thermal Conductivity
 
+.. math::
+   Valid Range: 10.0 K \le T \le 2500.0 K
+
 Specific Heat Capacity
 ----------------------
-
-Valid Temperature Range:
-
-.. math::
-   5 \le T \le 3000
 
 .. figure:: img/un_cp.png
    :scale: 100 %
@@ -36,9 +42,5 @@ Valid Temperature Range:
 
    Specific Heat Capacity
 
-References
-----------
-
-SNP-HDBK-0008 SNP Material Property Handbook
-https://ntrs.nasa.gov/citations/20240004217
-
+.. math::
+   Valid Range: 5.0 K \le T \le 3000.0 K
