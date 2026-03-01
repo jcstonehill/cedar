@@ -37,15 +37,6 @@ cedar.benchmarks
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: childclass.rst
-
-   cedar.benchmarks.AdiabaticTransient0D
-   cedar.benchmarks.DirichletSteady1D
-   cedar.benchmarks.NAFEMSTransient1D
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
    :template: function.rst
 
    cedar.benchmarks.run
