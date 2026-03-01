@@ -16,6 +16,8 @@ class ZrC_C(cedar.Material):
         yield a smooth transition.
     """
 
+    full_name = "Zirconium Carbide Composite"
+
     T_min_k = 200
     T_max_k = 3100
 
@@ -25,7 +27,7 @@ class ZrC_C(cedar.Material):
     def rho_rt(self) -> float:
         return 6700.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T/1000.0
         T_k2 = T_k * T_k
@@ -44,7 +46,7 @@ class ZrC_C(cedar.Material):
 
         return k
 
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T/1000.0
         T_k2 = T_k*T_k

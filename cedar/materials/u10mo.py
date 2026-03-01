@@ -12,6 +12,8 @@ class U10Mo(cedar.Material):
         National Laboratory, Report INL/EXT-10-19373, Idaho Falls, ID, Nov. 2010.
     """
 
+    full_name = "Uranium 10-Molybdenum Alloy"
+
     T_min_k = 293.15
     T_max_k = 1073.15
 
@@ -24,12 +26,12 @@ class U10Mo(cedar.Material):
     def rho_rt(self) -> float:
         return (1-self.P)*17150.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
 
         return 0.612435+0.0351*T
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T2 = T*T
 

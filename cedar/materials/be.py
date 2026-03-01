@@ -18,6 +18,8 @@ class Be(cedar.Material):
 
     """
 
+    full_name = "Beryllium"
+
     T_min_k = 200
     T_max_k = 1589
 
@@ -27,7 +29,7 @@ class Be(cedar.Material):
     def rho_rt(self) -> float:
         return 1848
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T[T==0] = 1e-12 # Prevent divide by zero in AN term
         T_k = T / 1000.0
@@ -36,7 +38,7 @@ class Be(cedar.Material):
         A0, A1, A2, AN, N = 182.6, -118.9, 20.47, 1.192, -2.825
         return A0 + A1*T_k + A2*T_k2 + AN*T_k**N
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         T_k2 = T_k*T_k

@@ -12,6 +12,8 @@ class UN(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
+    full_name = "Uranium Nitride"
+
     T_min_k = 10
     T_max_k = 2500
 
@@ -24,7 +26,7 @@ class UN(cedar.Material):
     def rho_rt(self) -> float:
         return (1-self.P)*14330.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         k = np.zeros_like(T)
@@ -40,7 +42,7 @@ class UN(cedar.Material):
 
         return k
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         T_k2 = T_k*T_k

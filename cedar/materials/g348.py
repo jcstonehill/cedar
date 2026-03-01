@@ -17,6 +17,8 @@ class G348(cedar.Material):
         1973.
     """
 
+    full_name = "G-348 Graphite"
+
     T_min_k = 303.15
     T_max_k = 1273.15
 
@@ -26,7 +28,7 @@ class G348(cedar.Material):
     def rho_rt(self) -> float:
         return 1860.35
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T[T>self.T_max_k] = self.T_max_k
         T2 = T*T
@@ -35,7 +37,7 @@ class G348(cedar.Material):
         A0, A1, A2 = 166.111, -0.127717, 3.719e-5
         return A0 + A1*T + A2*T2
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T[T<self.T_min_cp] = self.T_min_cp
         T2 = T*T

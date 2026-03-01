@@ -14,6 +14,8 @@ class UC_ZrC_C(cedar.Material):
         National Laboratory, Report LA-5398-MS Vol 1, Los Alamos, NM, Sept. 1973.
     """
 
+    full_name = "Uranium Zirconium Carbide Composite"
+
     T_min_k = 300
     T_max_k = 2600
 
@@ -43,10 +45,10 @@ class UC_ZrC_C(cedar.Material):
     def rho_rt(self) -> float:
         return 6700.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         np.array(T, dtype = np.float64)
         return np.interp(T, self._k_T_data, self._k_data)
 
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         np.array(T, dtype = np.float64)
         return np.interp(T, self._cp_T_data, self._cp_data)

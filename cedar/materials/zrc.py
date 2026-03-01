@@ -12,6 +12,8 @@ class ZrC(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
+    full_name = "Zirconium Carbide"
+
     T_min_k = 100
     T_max_k = 2650
 
@@ -21,7 +23,7 @@ class ZrC(cedar.Material):
     def rho_rt(self) -> float:
         return 6730.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T/1000.0
         T_k2 = T_k*T_k
@@ -29,7 +31,7 @@ class ZrC(cedar.Material):
         A0, A1, A2 = 23.76, 8.9, -0.7014
         return A0 + A1*T_k + A2*T_k2
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T/1000.0
         T_k2 = T_k*T_k

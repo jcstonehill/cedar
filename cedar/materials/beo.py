@@ -12,6 +12,8 @@ class BeO(cedar.Material):
         https://ntrs.nasa.gov/citations/20240004217
     """
 
+    full_name = "Beryllium Oxide"
+
     T_min_k = 200
     T_max_k = 2301
 
@@ -21,7 +23,7 @@ class BeO(cedar.Material):
     def rho_rt(self) -> float:
         return 3010
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         T_k2 = T_k*T_k
@@ -29,7 +31,7 @@ class BeO(cedar.Material):
         A0, A1, A_0, A_1 = 57.1, 0.3584, 0.0476, 0.2395
         return (A0 + A1*T_k) / (A_0 + A_1*T_k + T_k2)
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         T_k2 = T_k*T_k

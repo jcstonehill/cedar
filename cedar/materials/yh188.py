@@ -13,6 +13,8 @@ class YH188(cedar.Material):
         Laboratory, Report ORNL/TM-2021/2052, Oak Ridge, TN, Jun. 2021.
     """
 
+    full_name = "Yttrium Hydride (YH1.88)"
+
     T_min_k = 300
     T_max_k = 823
 
@@ -29,10 +31,10 @@ class YH188(cedar.Material):
 
         return 1/(160*T-24600.)
 
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         return self.rho_rt()*self.a(T)*self.cp(T)
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T[T<300] = 300
         T[T>823] = 823

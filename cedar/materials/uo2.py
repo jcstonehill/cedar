@@ -23,6 +23,8 @@ class UO2(cedar.Material):
         yield a smooth transition.
     """
 
+    full_name = "Uranium Dioxide"
+
     T_min_k = 500
     T_max_k = 3000
     
@@ -35,7 +37,7 @@ class UO2(cedar.Material):
     def rho_rt(self) -> float:
         return (1-self.P)*10970.0
     
-    def k(self, T: np.ndarray) -> np.ndarray:
+    def _k(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T_k = T / 1000.0
         T_k2 = T_k*T_k
@@ -51,7 +53,7 @@ class UO2(cedar.Material):
 
         return k
     
-    def cp(self, T: np.ndarray) -> np.ndarray:
+    def _cp(self, T: np.ndarray) -> np.ndarray:
         T = np.array(T, dtype = np.float64)
         T[T<=5] = 5
         
