@@ -1,6 +1,7 @@
 from cedar.bc import BC
 from cedar.mesh import Mesh, Mesh0D, Mesh1D, Mesh3D
 from cedar.field import Field
+from cedar.field import FieldView
 from cedar.fluid import Fluid
 from cedar.material import Material
 from cedar.source import Source
