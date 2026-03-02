@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-import numpy as np
 
 import cedar
+
 
 class BC(ABC):
     def __init__(self):
@@ -13,5 +13,5 @@ class BC(ABC):
         pass
 
     @abstractmethod
-    def step(self, t: float):
+    def update(self, t: float):
         pass
