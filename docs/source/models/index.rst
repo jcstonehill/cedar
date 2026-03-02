@@ -1,67 +1,53 @@
 Models
 ======
 
-.. toctree::
-   :hidden:
+.. .. toctree::
+..    :hidden:
 
-   heat_transfer/index.rst
-   flow/index.rst
+..    heat_transfer/index.rst
+..    heat_transfer/tutorial.rst
+..    heat_transfer/theory.rst
+..    heat_transfer/numerical_implementation.rst
+..    flow/index.rst
+..    flow/tutorial.rst
+..    flow/theory.rst
+..    flow/numerical_implementation.rst
 
 Below is a directory to technical documentation for all models currently included in Cedar.
 
-Heat Transfer
--------------
-
 .. list-table::
 
    * - .. figure:: img/heat_transfer.png
-          :target: heat_transfer/index.html
           :scale: 25 %
           :align: center
 
-          :doc:`View Documentation <heat_transfer/index>`
+          **Heat Transfer**
 
      - | Solves the transient heat conduction equation on a 3D mesh.
        | 
-       | :math:`\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''`
+       | - :doc:`heat_transfer/index`
+       | - :doc:`heat_transfer/tutorial`
+       | - :doc:`heat_transfer/theory`
+       | - :doc:`heat_transfer/numerical_implementation`
        
-Flow
--------------
-
-.. list-table::
-
-   * - .. figure:: img/heat_transfer.png
-          :target: heat_transfer/index.html
+   * - .. figure:: img/flow.png
           :scale: 25 %
           :align: center
 
-          :doc:`View Documentation <flow/index>`
+          **Flow**
 
      - | Solves the compressible 1D area-averaged Euler flow equations.
        | 
-       | :math:`\frac{\partial \rho A}{\partial t} + \frac{\partial \rho u A}{\partial x} = 0`
-       | 
-       | :math:`\frac{\partial \rho u A}{\partial t} + \frac{\partial (\rho u^2 + P) A}{\partial x} = P \frac{\partial A}{\partial x} - F A + \rho g_x A`
-       | 
-       | :math:`\frac{\partial \rho E A}{\partial t} + \frac{\partial u (\rho E + P) A}{\partial x} = \rho u g_x A + \dot{q}''' A`
-
-Neutronics
--------------
-
-.. list-table::
+       | - :doc:`flow/index`
+       | - :doc:`flow/tutorial`
+       | - :doc:`flow/theory`
+       | - :doc:`flow/numerical_implementation`
 
    * - .. figure:: img/neutronics.png
-          :target: neutronics/index.html
           :scale: 25 %
           :align: center
 
-          :doc:`View Documentation <neutronics/index>`
+          **Neutronics**
 
-     - | Solves the neutron transport equation using OpenMC and the point reactor kinetics equations.
-       | 
-       | :math:`\frac{\partial \rho A}{\partial t} + \frac{\partial \rho u A}{\partial x} = 0`
-       | 
-       | :math:`\frac{\partial \rho u A}{\partial t} + \frac{\partial (\rho u^2 + P) A}{\partial x} = P \frac{\partial A}{\partial x} - F A + \rho g_x A`
-       | 
-       | :math:`\frac{\partial \rho E A}{\partial t} + \frac{\partial u (\rho E + P) A}{\partial x} = \rho u g_x A + \dot{q}''' A`
+     - | COMING SOON
 

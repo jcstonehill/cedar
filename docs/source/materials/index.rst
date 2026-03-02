@@ -1,21 +1,6 @@
 Materials
 ==========
 
-.. toctree::
-   :hidden:
-
-   be.rst
-   beo.rst
-   constantmaterial.rst
-   g348.rst
-   u10mo.rst
-   uc_zrc_c.rst
-   un.rst
-   uo2.rst
-   yh188.rst
-   zrc_c.rst
-   zrc.rst
-
 All material property objects are created such that they will provide continuous
 and positive values for all temperature dependent functions from 1e-12 K to
 10,000 K. The properties are extended to such extreme bounds to aid in problem

@@ -1,19 +1,5 @@
-Heat Transfer
-=============
-
-Documentation
--------------
-
-.. toctree::
-   :maxdepth: 1
-
-   tutorial
-   theory
-   numerical_implementation
-   ../../benchmarks/index
-
 Overview
---------
+=============
 
 The :class:`cedar.HeatTransfer` model solves the heat conduction equation on a 3D mesh. 
 
@@ -29,6 +15,16 @@ Where
 | :math:`T` is temperature :math:`[K]`
 | :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
 | :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
+
+Fields
+------
+
+TODO
+
+Model Coupling
+--------------
+
+TODO
 
 References
 ----------

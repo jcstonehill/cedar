@@ -1,19 +1,5 @@
-Flow
-====
-
-Documentation
--------------
-
-.. toctree::
-   :maxdepth: 1
-
-   tutorial
-   theory
-   numerical_implementation
-   ../../benchmarks/index
-
 Overview
---------
+=========
 
 The :class:`cedar.Flow` model solves the compressible Euler flow equations on a 1D mesh.
 
