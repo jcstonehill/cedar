@@ -376,7 +376,7 @@ class Mesh3D(Mesh):
 
         self.face_d = np.stack((d1, d2), axis=1).astype(np.float64)
 
-        self.face_w = 1 / (1+d1/d2)
+        self.face_w = d2 / (d2+d1)
 
         for boundary in self.boundaries:
             self.boundary_area[boundary] = np.sum(self.face_areas[self.boundary_i[boundary]])
