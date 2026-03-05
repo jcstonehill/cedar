@@ -17,7 +17,7 @@ Starting from the Partial Differential Equation:
 Rewrite in terms of flux.
 
 .. math::
-    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla J = \dot{q}_i'''
+    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} + \nabla J = \dot{q}_i'''
 
 Where
 
@@ -26,14 +26,14 @@ Where
 | :math:`T` is temperature :math:`[K]`
 | :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
 | :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
-| :math:`J` is the flux :math:`[\frac{W}{m^2}]`
+| :math:`J` is the flux out of a cell :math:`[\frac{W}{m^2}]`
 
 Now, we separate the computational domain into discrete volumes, known as
 cells. The governing equation is rewritten to be applied to a single cell,
 :math:`i`, by integrating all terms over the cell volume.
 
 .. math::
-    \left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i - \sum^{m}_{j=1} A_j J_j = \dot{q}_i
+    \left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i + \sum^{m}_{j=1} A_j J_j = \dot{q}_i
 
 Where
 
