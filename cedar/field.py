@@ -8,6 +8,8 @@ class FieldView:
         self.field: "Field" = field
         self.key: str = key
 
+        self.N: int = self.field.values[key].size
+
     def values(self) -> np.ndarray:
         return self.field.values[self.key]
     
@@ -33,14 +35,28 @@ class Field:
 
         self.values: dict[str, np.ndarray] = {}
 
-    def as_continuous_cell_value(self) -> np.ndarray:
-        value = np.zeros(self.mesh.N_cells)
+    def get_ic(self, domain: str = None):
+        if domain is None:
+            ic = np.zeros(self.mesh.N_cells, dtype = np.float64)
 
-        for region in self.mesh.regions:
-            value[self.mesh.region_i[region]] = self.values[region]
+            for region in self.mesh.regions:
+                ic[self.mesh.region_i[region]] = self.ic[region]
 
-        return value
+            return ic
+        
+        return self.ic[domain]
 
+    def get(self, domain: str = None):
+        if domain is None:
+            values = np.zeros(self.mesh.N_cells, dtype = np.float64)
+
+            for region in self.mesh.regions:
+                values[self.mesh.region_i[region]] = self.values[region]
+
+            return values
+        
+        return self.values[domain]
+    
     # def check(self):
     #     pass
         # if self.requires_ic and self.ic is None:
@@ -54,34 +70,38 @@ class Field:
         #             if region not in self.ic:
         #                 raise Exception(f"No IC provided for region: {region}")
 
-    def ic_as_continuous_cell_value(self) -> np.ndarray:
-        ic = np.zeros(self.mesh.N_cells)
-
-        for region in self.mesh.regions:
-            ic[self.mesh.region_i[region]] = self.ic[region]
-
-        return ic
-
     def initialize(self, t_start: float):
-        # Convert user inpute to dict[domain] = np.ndarray
-        self.ic = self._interpret_user_ic(t_start)
+        # Convert user input to dict[domain] = np.ndarray
+        self.ic = self._interpret_ic_from_user(self.ic)
 
         # Now, copy IC to be initial guess of values
         for key in self.ic:
             self.values[key] = np.copy(self.ic[key])
 
+        if self.is_on_boundaries:
+            for boundary in self.mesh.boundaries:
+                self.values[boundary] = np.zeros(self.mesh.boundary_N[boundary], dtype = np.float64)
+
+    def set(self, values: np.ndarray, domain: str = None):
+        if domain is None:
+            for region in self.mesh.regions:
+                self.values[region][:] = values[self.mesh.region_i[region]]
+
+        else:
+            self.values[domain][:] = values
+
     def step(self, t: float):
         for key in self.ic:
-            self.ic[key] = np.copy(self.values[key])
+            self.ic[key][:] = self.values[key]
 
-    def _interpret_user_ic(self, t_start: float) -> np.ndarray:
+    def _interpret_ic_from_user(self, user_ic) -> np.ndarray:
         ic = {}
 
         if self.is_on_regions:
             for region in self.mesh.regions:
                 N = self.mesh.region_N[region]
 
-                ic_input = self.ic[region] if isinstance(self.ic, dict) else self.ic
+                ic_input = user_ic[region] if isinstance(user_ic, dict) else user_ic
 
                 # No IC Provided
                 if ic_input is None:
@@ -95,39 +115,13 @@ class Field:
                     # Get coordinates for all cells using advanced indexing: Shape (N, 3)
                     coords = self.mesh.cell_centers[cell_indices]
  
-                    ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
+                    ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2]), dtype=np.float64)
                 
                 elif np.array(ic_input).size == 1:
                     ic[region] = np.full(N, ic_input, dtype=np.float64)
 
                 else:
                     ic[region] = np.copy(ic_input)
-
-        if self.is_on_boundaries:
-            for boundary in self.mesh.boundaries:
-                N = self.mesh.boundary_N[boundary]
-
-                ic_input = self.ic[boundary] if isinstance(self.ic, dict) else self.ic
-
-                # No IC Provided
-                if ic_input is None:
-                    ic[boundary] = np.zeros(N)
-
-                # IC is func(x, y, z)
-                elif callable(ic_input):
-                    # Extract indices for the whole region at once
-                    face_indicies = self.mesh.boundary_i[boundary]
-                    
-                    # Get coordinates for all cells using advanced indexing: Shape (N, 3)
-                    coords = self.mesh.face_centers[face_indicies]
- 
-                    ic[boundary] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
-                
-                elif np.array(ic_input).size == 1:
-                    ic[boundary] = np.full(N, ic_input, dtype=np.float64)
-
-                else:
-                    ic[boundary] = np.copy(ic_input)
 
         return ic
     

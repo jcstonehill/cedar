@@ -173,13 +173,8 @@ class Problem:
 
     def step(self, t: float):
         for model in self.models:
-            for bc in model.bc.values():
-                bc.step(t)
-
             for field in model.fields.values():
                 field.step(t)
-
-            model.source.step(t)
 
     def _solve_once(self, dt = None) -> bool:
         for i in range(self.max_iter):

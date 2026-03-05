@@ -13,5 +13,5 @@ class Source(ABC):
         pass
 
     @abstractmethod
-    def step(self, t: float):
+    def update(self, t: float):
         pass
