@@ -1,3 +1,0 @@
-from cedar.benchmarks.heat_transfer.adiabatic_transient_0d import AdiabaticTransient0D
-from cedar.benchmarks.heat_transfer.dirichlet_steady_1d import DirichletSteady1D
-from cedar.benchmarks.heat_transfer.nafems_transient_1d import NAFEMSTransient1D
