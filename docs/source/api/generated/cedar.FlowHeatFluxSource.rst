@@ -1,8 +1,8 @@
-﻿cedar.FixedTemperatureBC
+﻿cedar.FlowHeatFluxSource
 ========================
 
 .. currentmodule:: cedar
 
-.. autoclass:: FixedTemperatureBC
+.. autoclass:: FlowHeatFluxSource
     :members:
     :inherited-members:

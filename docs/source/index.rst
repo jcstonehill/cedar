@@ -38,6 +38,7 @@ makes it both easy to use and flexible to extend with new physics models.
    usersguide/index
    models/index
    materials/index
-   benchmarks/index
+   fluids/index
+   v_and_v/index
    api/index
    GitHub <https://github.com/jcstonehill/cedar>

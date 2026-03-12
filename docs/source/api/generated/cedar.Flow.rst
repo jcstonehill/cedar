@@ -1,8 +1,8 @@
-﻿cedar.HeatSource
-================
+﻿cedar.Flow
+==========
 
 .. currentmodule:: cedar
 
-.. autoclass:: HeatSource
+.. autoclass:: Flow
     :members:
     :inherited-members:

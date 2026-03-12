@@ -8,8 +8,9 @@ cedar
    :nosignatures:
    :template: class.rst
 
-   cedar.BC
    cedar.Benchmark
+   cedar.Field
+   cedar.FieldView
    cedar.Log
    cedar.Material
    cedar.Mesh
@@ -17,10 +18,11 @@ cedar
    cedar.Mesh3D
    cedar.Model
    cedar.Problem
-   cedar.Source
+   cedar.Term
+   cedar.Transfer
 
-cedar.models
-------------
+Models
+------
 .. autosummary::
    :toctree: generated
    :nosignatures:
@@ -28,19 +30,20 @@ cedar.models
 
    cedar.HeatTransfer
    cedar.HeatTransferBC
-   cedar.HeatSource
-   cedar.FixedTemperatureBC
    cedar.AdiabaticBC
-
-cedar.benchmarks
-----------------
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: function.rst
-
-   cedar.benchmarks.run
-
+   cedar.KnownTemperatureBC
+   cedar.KnownFluxBC
+   cedar.ConvectiveBC
+   cedar.HeatTransferSource
+   cedar.HeatTransferTotalSource
+   cedar.HeatTransferVolumetricSource
+   cedar.Flow
+   cedar.InletBC
+   cedar.OutletBC
+   cedar.FlowSource
+   cedar.FlowQdotSource
+   cedar.FlowHeatFluxSource
+   
 cedar.materials
 ---------------
 .. autosummary::

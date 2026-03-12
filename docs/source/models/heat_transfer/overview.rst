@@ -1,5 +1,14 @@
 Overview
-=============
+========
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   tutorial.rst
+   theory.rst
+   numerical_implementation.rst
+   benchmarks/index.rst
 
 The :class:`cedar.HeatTransfer` model solves the heat conduction equation on a 3D mesh. 
 

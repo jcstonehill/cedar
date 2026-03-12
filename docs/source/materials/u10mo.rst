@@ -1,3 +1,4 @@
+:orphan:
 
 Uranium 10-Molybdenum Alloy
 ====================================

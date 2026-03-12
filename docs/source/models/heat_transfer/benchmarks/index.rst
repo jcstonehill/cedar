@@ -4,29 +4,15 @@ Benchmarks
 .. toctree::
   :hidden:
 
-  thmcase1.rst
   adiabatictransient0d.rst
   dirichletsteady1d.rst
   nafemstransient1d.rst
 
-Flow
-----
+Below are the benchmarks for the :class:`cedar.HeatTransfer` model.
 
 .. list-table::
    :header-rows: 1
-
-   * - Benchmark
-     - Reference
-     - Error
-   * - :doc:`thmcase1`
-     - MOOSE THM
-     - 0.1%
-
-Heat Transfer
--------------
-
-.. list-table::
-   :header-rows: 1
+   :align: center
 
    * - Benchmark
      - Reference
