@@ -24,6 +24,25 @@ def add_upwind_ghost_cell(array: np.ndarray) -> np.ndarray:
     """
     return np.insert(array, 0, array[0])
 
+def calculate_3d_polygon_area(vertices):
+    """
+    Calculates the area of a 3D planar polygon using the cross product.
+    """
+    if len(vertices) < 3:
+        return 0.0 # Points or lines have zero area
+        
+    # Pick the first vertex as an anchor to form triangles
+    v0 = vertices[0]
+    total_cross_product = np.zeros(3)
+    
+    for i in range(1, len(vertices) - 1):
+        v1 = vertices[i] - v0
+        v2 = vertices[i + 1] - v0
+        total_cross_product += np.cross(v1, v2)
+        
+    # The magnitude of the cross product sum divided by 2 is the total area
+    return 0.5 * np.linalg.norm(total_cross_product)
+
 def churchill(eps: float, Dh: float, Re: np.ndarray) -> np.ndarray:
     """
     Compute the Darcy friction factor using the Churchill correlation.
@@ -50,6 +69,72 @@ def churchill(eps: float, Dh: float, Re: np.ndarray) -> np.ndarray:
 
     f = 8*((8/Re)**12 + (1/((a+b)**1.5)))**(1/12)
     return f
+
+def clip_polygon_against_plane(vertices, axis_index, plane_value, keep_greater_than=True):
+    """
+    Clips a 3D polygon against an axis-aligned plane.
+    axis_index: 0 for X, 1 for Y, 2 for Z.
+    keep_greater_than: True to keep the side > plane_value, False to keep < plane_value.
+    """
+    if len(vertices) == 0:
+        return []
+
+    clipped_vertices = []
+    
+    # Iterate through all edges of the polygon
+    for i in range(len(vertices)):
+        v1 = vertices[i]
+        v2 = vertices[(i + 1) % len(vertices)] # Next vertex, wrapping around to 0
+        
+        # Determine if v1 and v2 are "inside" the clipping region
+        v1_in = (v1[axis_index] >= plane_value) if keep_greater_than else (v1[axis_index] <= plane_value)
+        v2_in = (v2[axis_index] >= plane_value) if keep_greater_than else (v2[axis_index] <= plane_value)
+        
+        if v1_in:
+            clipped_vertices.append(v1)
+            
+        # If the edge crosses the plane, calculate the intersection point
+        if v1_in != v2_in:
+            t = (plane_value - v1[axis_index]) / (v2[axis_index] - v1[axis_index])
+            intersection = v1 + t * (v2 - v1)
+            clipped_vertices.append(intersection)
+            
+    return clipped_vertices
+
+def face_area_1d_overlap(face_points, cell_point_1, cell_point_2, axis_1d='z'):
+    """
+    Calculates the overlapping area between a 3D triangle and a 1D cell.
+    face_points: List of 3 numpy arrays [v1, v2, v3]
+    cell_point_1, cell_point_2: Numpy arrays defining the 1D cell bounds
+    flow_axis: 'x', 'y', or 'z'
+    """
+    axis_map = {'x': 0, 'y': 1, 'z': 2}
+    ax = axis_map[axis_1d.lower()]
+    
+    # Determine the min and max bounds of the 1D cell
+    c_min = min(cell_point_1[ax], cell_point_2[ax])
+    c_max = max(cell_point_1[ax], cell_point_2[ax])
+    
+    # 1. Clip the triangle to remove anything below the cell's minimum bound
+    clipped_poly = clip_polygon_against_plane(
+        vertices=face_points, 
+        axis_index=ax, 
+        plane_value=c_min, 
+        keep_greater_than=True
+    )
+    
+    # 2. Clip the remaining polygon to remove anything above the cell's maximum bound
+    clipped_poly = clip_polygon_against_plane(
+        vertices=clipped_poly, 
+        axis_index=ax, 
+        plane_value=c_max, 
+        keep_greater_than=False
+    )
+    
+    # 3. Calculate the area of the resulting shape
+    area = calculate_3d_polygon_area(clipped_poly)
+    
+    return area
 
 def format_computation_time(duration: float) -> str:
     """
@@ -469,31 +554,30 @@ def triangle_normal(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> np.ndarra
     normal = np.cross(v1, v2)
     return normal / np.linalg.norm(normal)
 
+def westinghouse_modified_mccarthy_wolf(Re: np.ndarray, Pr: np.ndarray, T_wall: np.ndarray,
+                                        T: np.ndarray, x: np.ndarray, D: np.ndarray) -> np.ndarray:
+    """
+    Compute the convective heat transfer coefficient using the
+    modified McCarthy-Wolf correlation.
 
-# def westinghouse_modified_mccarthy_wolf(Re: np.ndarray, Pr: np.ndarray, T_wall: np.ndarray,
-#                                         T: np.ndarray, x: np.ndarray, d: np.ndarray) -> np.ndarray:
-#     """
-#     Compute the convective heat transfer coefficient using the
-#     modified McCarthy–Wolf correlation.
+    Parameters
+    ----------
+    Re : ndarray
+        Reynolds number.
+    Pr : ndarray
+        Prandtl number.
+    T_wall : ndarray
+        Wall temperature.
+    T : ndarray
+        Bulk fluid temperature.
+    x : ndarray
+        Axial distance.
+    D : ndarray
+        Characteristic diameter.
 
-#     Parameters
-#     ----------
-#     Re : ndarray
-#         Reynolds number.
-#     Pr : ndarray
-#         Prandtl number.
-#     T_wall : ndarray
-#         Wall temperature.
-#     T : ndarray
-#         Bulk fluid temperature.
-#     x : ndarray
-#         Axial distance.
-#     d : ndarray
-#         Characteristic diameter.
-
-#     Returns
-#     -------
-#     ndarray
-#         Nusselt-number-based heat transfer correlation value.
-#     """
-#     return 0.025 * (Re**0.8) * (Pr**0.4) * ((T_wall / T)**-0.55) * (1 + 0.3 * (x / d)**-0.7)
+    Returns
+    -------
+    ndarray
+        Nusselt-number.
+    """
+    return 0.025 * (Re**0.8) * (Pr**0.4) * ((T_wall / T)**-0.55) * (1 + 0.3 * (x / D)**-0.7)
