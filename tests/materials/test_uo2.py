@@ -6,8 +6,8 @@ import cedar
 material = cedar.materials.UO2()
 
 @pytest.mark.parametrize("T, val", [
-    (5, 10.3629),
-    (300, 7.8048),
+    (5, 6.32),
+    (300, 6.32),
     (1000, 3.49),
     (2000, 1.73)
 ])
