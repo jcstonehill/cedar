@@ -95,12 +95,9 @@ class HeatTransferVolumetricSource(cedar.Term):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. volQgen = 1000
-        - An iterable with size = number of cells (1 value per cell in order of cell_i).
-            - ex. volQgen = [1000, 1100, 1200, 1300, 1400] # where region has 5 cells.
-        - A function f(x, y, z, t) evaluated at cell center positions and simulation time.
-            - ex. volQgen = lambda x, y, z, t: x + y + z + t + 1000
+        - A scalar value (same value enforced to each face). ex. volQgen = 1000
+        - An iterable with size = number of cells (1 value per cell in order of cell_i). ex. volQgen = [1000, 1100, 1200, 1300, 1400] # where region has 5 cells.
+        - A function f(x, y, z, t) evaluated at cell center positions and simulation time. ex. volQgen = lambda x, y, z, t: x + y + z + t + 1000
 
     Attributes
     ----------

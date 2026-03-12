@@ -16,20 +16,16 @@ class InletBC(cedar.Term):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. T0 = 300
-        - A function f(t) evaluated at simulation time.
-            - ex. T0 = lambda t: t + 300
+        - A scalar value (same value enforced to each face). ex. T0 = 300
+        - A function f(t) evaluated at simulation time. ex. T0 = lambda t: t + 300
 
     mdot : float or f(t), optional
         Known mass flow rate to apply to boundary in [kg/s].
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. mdot = 1
-        - A function f(t) evaluated at simulation time.
-            - ex. mdot = lambda t: t + 1
+        - A scalar value (same value enforced to each face). ex. mdot = 1
+        - A function f(t) evaluated at simulation time. ex. mdot = lambda t: t + 1
 
     Attributes
     ----------
@@ -76,10 +72,8 @@ class OutletBC(cedar.Term):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. P0 = 101325
-        - A function f(t) evaluated at simulation time.
-            - ex. P0 = lambda t: t + 101325
+        - A scalar value (same value enforced to each face). ex. P0 = 101325
+        - A function f(t) evaluated at simulation time. ex. P0 = lambda t: t + 101325
 
     Attributes
     ----------

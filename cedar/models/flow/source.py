@@ -35,10 +35,8 @@ class FlowQdotSource(FlowSource):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. Qdot = 1000
-        - A function f(t) evaluated at simulation time.
-            - ex. Qdot = lambda t: t + 1000
+        - A scalar value (same value enforced to each face). ex. Qdot = 1000
+        - A function f(t) evaluated at simulation time. Qdot = lambda t: t + 1000
 
     shape : Callable
         Relative heat fraction shape. This is a function f(x, y, z) evaluated at
@@ -119,14 +117,10 @@ class FlowHeatFluxSource(FlowSource):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. J = 1000
-        - An iterable with size = number of cells (1 value per cell in order of cell_i).
-            - ex. J = [1000, 1100, 1200, 1300, 1400] # where boundary has 5 faces.
-        - A function f(x, y, z, t) evaluated at cell center positions and simulation time.
-            - ex. J = lambda x, y, z, t: x + y + z + t + 1000
-        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping.
-            - ex. J = heat_transfer.J["boundary"]
+        - A scalar value (same value enforced to each face). ex. J = 1000
+        - An iterable with size = number of cells (1 value per cell in order of cell_i). ex. J = [1000, 1100, 1200, 1300, 1400] # where boundary has 5 faces.
+        - A function f(x, y, z, t) evaluated at cell center positions and simulation time. ex. J = lambda x, y, z, t: x + y + z + t + 1000
+        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping. ex. J = heat_transfer.J["boundary"]
 
     Attributes
     ----------

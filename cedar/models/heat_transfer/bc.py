@@ -206,28 +206,20 @@ class ConvectiveBC(HeatTransferBC):
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. T_flow = 300
-        - An iterable with size = number of faces (1 value per face in order of face_i).
-            - ex. T_flow = [300, 400, 500, 600, 700] # where boundary has 5 faces.
-        - A function f(x, y, z, t) evaluated at face center positions and simulation time.
-            - ex. T_flow = lambda x, y, z, t: x + y + z + t + 300
-        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping.
-            - ex. T_flow = flow.T
+        - A scalar value (same value enforced to each face). ex. T_flow = 300
+        - An iterable with size = number of faces (1 value per face in order of face_i). ex. T_flow = [300, 400, 500, 600, 700] # where boundary has 5 faces.
+        - A function f(x, y, z, t) evaluated at face center positions and simulation time. ex. T_flow = lambda x, y, z, t: x + y + z + t + 300
+        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping. ex. T_flow = flow.T
 
     htc : float or Iterable or f(x, y, z, t) or cedar.Field or cedar.FieldView
         Heat transfer coefficient in [W/m^2-K].
 
         Can be specified by one of the following:
 
-        - A scalar value (same value enforced to each face).
-            - ex. htc = 1000
-        - An iterable with size = number of faces (1 value per face in order of face_i).
-            - ex. htc = [1000, 1100, 1200, 1300, 1400] # where boundary has 5 faces.
-        - A function f(x, y, z, t) evaluated at face center positions and simulation time.
-            - ex. htc = lambda x, y, z, t: x + y + z + t + 1000
-        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping.
-            - ex. htc = flow.htc
+        - A scalar value (same value enforced to each face). ex. htc = 1000.
+        - An iterable with size = number of faces (1 value per face in order of face_i). ex. htc = [1000, 1100, 1200, 1300, 1400] # where boundary has 5 faces.
+        - A function f(x, y, z, t) evaluated at face center positions and simulation time. ex. htc = lambda x, y, z, t: x + y + z + t + 1000.
+        - A cedar.Field/cedar.FieldView which will be used to create model coupling using a Transfer with nearest value mapping. ex. htc = flow.htc
 
     Attributes
     ----------
