@@ -3,6 +3,7 @@ import numpy as np
 
 import cedar
 
+
 class Model(ABC):
     # @property
     # def mesh(self) -> cedar.Mesh:
@@ -17,19 +18,29 @@ class Model(ABC):
 
     def __init__(self):
         self.mesh: cedar.Mesh = None
-        self.bc: dict[str, cedar.BC] = {}
         self.fields: dict[str, cedar.Field] = {}
-        self.source: cedar.Source = None
         self.output_fields: list[str] = []
-        
-    def add_field(self, name: str, requires_ic = False, is_on_regions: bool = True, is_on_boundaries: bool = False) -> cedar.Field:
+
+        self.bcs: dict[str, cedar.Term] = {}
+        self.sources: dict[str, cedar.Term] = None
+
+    def _add_field(
+        self,
+        name: str,
+        model_name: str,
+        default_val: float,
+        is_on_regions: bool = True,
+        is_on_boundaries: bool = False,
+    ) -> cedar.Field:
         if not hasattr(self, "fields"):
             self.fields: dict[str, cedar.Field] = {}
-            
+
         if not hasattr(self, "output_fields"):
             self.output_fields: list[str] = []
 
-        new_field = cedar.Field(name, requires_ic, is_on_regions, is_on_boundaries)
+        new_field = cedar.Field(
+            name, model_name, default_val, is_on_regions, is_on_boundaries
+        )
         self.fields[name] = new_field
 
         self.output_fields.append(name)
@@ -41,9 +52,13 @@ class Model(ABC):
     #     pass
 
     @abstractmethod
-    def initialize(self, t_start: float):
+    def _build(self):
         pass
 
     @abstractmethod
-    def iterate(self, res_reduc: float, dt: float) -> float:
+    def _initialize(self):
+        pass
+
+    @abstractmethod
+    def _iterate(self, res_reduc: float, dt: float) -> float:
         pass

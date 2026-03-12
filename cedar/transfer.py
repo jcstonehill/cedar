@@ -1,148 +1,99 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 import numpy as np
 
 import cedar
 
 
-class FieldView:
-    def __init__(self, field: "Field", key: str):
-        self.field: "Field" = field
-        self.key: str = key
-
-    def values(self) -> np.ndarray:
-        return self.field.values[self.key]
-    
-    @property
-    def mesh(self) -> cedar.Mesh:
-        return self.field.mesh
-
-class Field:
-    def __init__(
-            self,
-            name: str,
-            requires_ic: bool = False,
-            is_on_regions: bool = True,
-            is_on_boundaries: bool = False
-    ):
-        self.name: str = name
-        self.requires_ic: bool = requires_ic
-        self.is_on_regions: bool = is_on_regions
-        self.is_on_boundaries: bool = is_on_boundaries
-
-        self.ic: np.ndarray  = None         # Could be a number, a dict of numbers, a function, or a dict of functions
-        self.mesh: cedar.Mesh = None        # This is assigned externally while the problem is built
-
-        self.values: dict[str, np.ndarray] = {}
-
-    def as_continuous_cell_value(self) -> np.ndarray:
-        value = np.zeros(self.mesh.N_cells)
-
-        for region in self.mesh.regions:
-            value[self.mesh.region_i[region]] = self.values[region]
-
-        return value
-
-    # def check(self):
-    #     pass
-        # if self.requires_ic and self.ic is None:
-        #     raise Exception(f"Field requires IC: {self.name}")
-
-        # if not self.requires_ic 
-
-        # if isinstance(self.ic, dict):
-        #     if self.is_on_regions:
-        #         for region in self.mesh.regions:
-        #             if region not in self.ic:
-        #                 raise Exception(f"No IC provided for region: {region}")
-
-    def ic_as_continuous_cell_value(self) -> np.ndarray:
-        ic = np.zeros(self.mesh.N_cells)
-
-        for region in self.mesh.regions:
-            ic[self.mesh.region_i[region]] = self.ic[region]
-
-        return ic
-
-    def initialize(self, t_start: float):
-        # Convert user inpute to dict[domain] = np.ndarray
-        self.ic = self._interpret_user_ic(t_start)
-
-        # Now, copy IC to be initial guess of values
-        for key in self.ic:
-            self.values[key] = np.copy(self.ic[key])
-
-    def step(self, t: float):
-        for key in self.ic:
-            self.ic[key] = np.copy(self.values[key])
-
-    def _interpret_user_ic(self, t_start: float) -> np.ndarray:
-        ic = {}
-
-        if self.is_on_regions:
-            for region in self.mesh.regions:
-                N = self.mesh.region_N[region]
-
-                ic_input = self.ic[region] if isinstance(self.ic, dict) else self.ic
-
-                # No IC Provided
-                if ic_input is None:
-                    ic[region] = np.zeros(N)
-
-                # IC is func(x, y, z)
-                elif callable(ic_input):
-                    # Extract indices for the whole region at once
-                    cell_indices = self.mesh.region_i[region]
-                    
-                    # Get coordinates for all cells using advanced indexing: Shape (N, 3)
-                    coords = self.mesh.cell_centers[cell_indices]
- 
-                    ic[region] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
-                
-                elif np.array(ic_input).size == 1:
-                    ic[region] = np.full(N, ic_input, dtype=np.float64)
-
-                else:
-                    ic[region] = np.copy(ic_input)
-
-        if self.is_on_boundaries:
-            for boundary in self.mesh.boundaries:
-                N = self.mesh.boundary_N[boundary]
-
-                ic_input = self.ic[boundary] if isinstance(self.ic, dict) else self.ic
-
-                # No IC Provided
-                if ic_input is None:
-                    ic[boundary] = np.zeros(N)
-
-                # IC is func(x, y, z)
-                elif callable(ic_input):
-                    # Extract indices for the whole region at once
-                    face_indicies = self.mesh.boundary_i[boundary]
-                    
-                    # Get coordinates for all cells using advanced indexing: Shape (N, 3)
-                    coords = self.mesh.face_centers[face_indicies]
- 
-                    ic[boundary] = np.array(ic_input(coords[:, 0], coords[:, 1], coords[:, 2], t_start), dtype=np.float64)
-                
-                elif np.array(ic_input).size == 1:
-                    ic[boundary] = np.full(N, ic_input, dtype=np.float64)
-
-                else:
-                    ic[boundary] = np.copy(ic_input)
-
-        return ic
-    
-    def __getitem__(self, key: str) -> FieldView:
-        return FieldView(self, key)
-
 class Transfer:
     def __init__(self, src: cedar.Field | cedar.FieldView, mapping: np.ndarray):
         self.src: cedar.Field | cedar.FieldView = src
         self.mapping: np.ndarray = mapping
 
+        self.prev = None
+        self.current = None
+
     def get(self) -> np.ndarray:
-        if isinstance(self.src, cedar.Field):
-            return self.mapping @ self.src.as_continuous_cell_value()
-        
-        else:
-            return self.mapping @ self.src.values()
+        self.prev = self.current
+        self.current = self.mapping @ self.src.get()
+
+        return self.current
+
+    def residual(self) -> float:
+        if self.prev is None:
+            return 1e12
+
+        return np.sum(np.abs((self.current - self.prev) / self.current))
+
+    @classmethod
+    def with_nearest_value_mapping(
+        cls, src: cedar.Field | cedar.FieldView, tgt_pts: np.ndarray
+    ) -> "Transfer":
+
+        if isinstance(src, cedar.Field):
+            src_pts = src.mesh.cell_centers
+
+        elif isinstance(src, cedar.FieldView):
+            if src.domain in src.mesh.regions:
+                src_pts = src.mesh.cell_centers[src.mesh.region_i[src.domain]]
+
+            else:
+                src_pts = src.mesh.face_centers[src.mesh.boundary_i[src.domain]]
+
+        # pairwise distances: (n_tgt, n_src)
+        distances = np.linalg.norm(src_pts[None, :, :] - tgt_pts[:, None, :], axis=2)
+
+        nearest = np.argmin(distances, axis=1)
+
+        mapping = np.zeros((tgt_pts.shape[0], src_pts.shape[0]))
+        mapping[np.arange(tgt_pts.shape[0]), nearest] = 1
+
+        return Transfer(src, mapping)
+
+    @classmethod
+    def with_layered_area_avg_mapping(
+        cls, src: cedar.FieldView, layer_mesh: cedar.Mesh1D
+    ) -> Transfer:
+        mapping = np.zeros((layer_mesh.N_cells, src.mesh.boundary_N[src.domain]))
+        face_i = src.mesh.boundary_i[src.domain]
+
+        for i in range(src.mesh.boundary_N[src.domain]):
+            face_pts = src.mesh.pts[src.mesh.face_pts_i[face_i[i]]]
+            area_total = src.mesh.face_areas[face_i[i]]
+
+            for j in range(layer_mesh.N_cells):
+                area_overlap = cedar.functions.face_area_1d_overlap(
+                    face_pts, layer_mesh.pts[j], layer_mesh.pts[j + 1]
+                )
+                mapping[j][i] += area_overlap / area_total
+
+        for i in range(layer_mesh.N_cells):
+            mapping[i][:] = mapping[i][:] / np.sum(mapping[i][:])
+
+        return Transfer(src, mapping)
+
+    @classmethod
+    def with_layered_summation_mapping(
+        cls, src: cedar.Field | cedar.FieldView, layer_mesh: cedar.Mesh1D
+    ) -> "Transfer":
+        mapping = np.zeros((layer_mesh.N_cells, src.mesh.boundary_N[src.domain]))
+        face_i = src.mesh.boundary_i[src.domain]
+
+        for i in range(src.mesh.boundary_N[src.domain]):
+            face_pts = src.mesh.pts[src.mesh.face_pts_i[face_i[i]]]
+            area_total = src.mesh.face_areas[face_i[i]]
+
+            for j in range(layer_mesh.N_cells):
+                area_overlap = cedar.functions.face_area_1d_overlap(
+                    face_pts, layer_mesh.pts[j], layer_mesh.pts[j + 1]
+                )
+                mapping[j][i] += area_overlap / area_total
+
+        return Transfer(src, mapping)
+
+    @classmethod
+    def with_summation_mapping(cls, src: cedar.Field | cedar.FieldView) -> "Transfer":
+        # TODO This shouldn't only work with boundaries, we should make it work with regions or fields too.
+        mapping = np.ones(src.mesh.boundary_N[src.domain], dtype=np.float64)
+
+        return Transfer(src, mapping)
