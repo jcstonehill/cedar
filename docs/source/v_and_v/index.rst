@@ -1,4 +1,0 @@
-Verification and Validation
-===========================
-
-TODO

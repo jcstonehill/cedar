@@ -39,6 +39,6 @@ makes it both easy to use and flexible to extend with new physics models.
    models/index
    materials/index
    fluids/index
-   v_and_v/index
+   vv/index
    api/index
    GitHub <https://github.com/jcstonehill/cedar>

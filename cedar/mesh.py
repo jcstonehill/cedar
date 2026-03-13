@@ -9,10 +9,6 @@ import itertools
 import cedar
 
 
-# MESH SHOULD USE A CUSTOM ID TO DIFFERENTIATE POINT SETS IN THE VTKHDF FILES RATHER THAN THE MODEL NAME.
-# CAN I IMPLEMENT THIS TO BE AUTOMATIC?
-
-
 class Mesh(ABC):
 
     id: itertools.count = itertools.count()

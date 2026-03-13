@@ -9,8 +9,8 @@ class HeatTransfer(cedar.Model):
     """
     Heat conduction model using FVM.
 
-    Solves the heat equation on a 3D mesh with region-dependent materials, heat
-    sources, and boundary conditions.
+    Solves the heat transfer equation on a 3D mesh with region-dependent
+    materials, heat sources, and boundary conditions.
 
     Parameters
     ----------

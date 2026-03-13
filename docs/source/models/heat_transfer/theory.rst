@@ -1,7 +1,7 @@
 Theory
 ======
 
-The :class:`cedar.HeatTransfer` model solves the heat conduction equation on a 3D mesh. 
+The :class:`cedar.HeatTransfer` model solves the heat transfer equation on a 3D mesh. 
 
 Heat conduction is the process by which thermal energy moves through a material
 due to microscopic interactions between its atoms. When one area is hotter
@@ -13,13 +13,15 @@ without any bulk motion of the material.
 At the macroscopic level, this behavior is described by Fourier's law.
 
 .. math::
-    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''
+    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''(t)
 
 Where
 
 | :math:`\rho` is mass density :math:`[\frac{kg}{m^3}]`
+| :math:`\vec{r}` is spatial position vector :math:`[m]`
 | :math:`c_p` is specific heat capacity :math:`[\frac{J}{kg K}]`
 | :math:`T` is temperature :math:`[K]`
+| :math:`t` is time :math:`[s]`
 | :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
 | :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
 

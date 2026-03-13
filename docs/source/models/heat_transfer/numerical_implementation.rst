@@ -4,28 +4,31 @@ Numerical Implementation
 .. warning::
     The :class:`cedar.HeatTransfer` model does not account for tangential cell flux at this time. It will be incorporated as future work.
 
-Finite Volume Method
---------------------
+Governing Equation
+------------------
 
 The Finite Volume Method is applied to the heat transfer equation.
 
 Starting from the Partial Differential Equation:
 
 .. math::
-    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''
+    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} - \nabla (k(T, \vec{r}) \nabla T) = \dot{q}'''(t)
 
-Rewrite in terms of flux.
+| :math:`\rho` is mass density :math:`[\frac{kg}{m^3}]`
+| :math:`\vec{r}` is spatial position vector :math:`[m]`
+| :math:`c_p` is specific heat capacity :math:`[\frac{J}{kg K}]`
+| :math:`T` is temperature :math:`[K]`
+| :math:`t` is time :math:`[s]`
+| :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
+| :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
+
+Use divergence theorem to rewrite in terms of flux.
 
 .. math::
-    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} + \nabla J = \dot{q}_i'''
+    \rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t} + \nabla J = \dot{q}_i'''(t)
 
 Where
 
-| :math:`\rho` is mass density :math:`[\frac{kg}{m^3}]`
-| :math:`c_p` is specific heat capacity :math:`[\frac{J}{kg K}]`
-| :math:`T` is temperature :math:`[K]`
-| :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
-| :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
 | :math:`J` is the flux out of a cell :math:`[\frac{W}{m^2}]`
 
 Now, we separate the computational domain into discrete volumes, known as
@@ -33,7 +36,7 @@ cells. The governing equation is rewritten to be applied to a single cell,
 :math:`i`, by integrating all terms over the cell volume.
 
 .. math::
-    \left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i + \sum^{m}_{j=1} A_j J_j = \dot{q}_i
+    \boxed{\left[\rho(\vec{r}) c_p(T, \vec{r}) \frac{\partial T}{\partial t}\right]_i V_i + \sum^{m}_{j=1} A_j J_j = \dot{q}_i(t)}
 
 Where
 
@@ -44,18 +47,15 @@ Where
 | :math:`A` is area of a face :math:`[m^2]`
 | :math:`\dot{q}` is internal heat source :math:`[W]`
 
-Face Calculations
------------------
+Examining the boxed equation above, further manipulationg is required. We need
+expressions for the face flux and the temporal terms.
 
-Flux is defined by the gradient of temperature and the thermal conductivity.
+Face Flux
+---------
 
-.. math::
-    J = -k(T, \vec{r}) \nabla T
-
-This means that for every face we must approximate the thermal conductivity
-:math:`k` and the temperature gradient at a face using cell values. Once we
-do this, we can easily rearrange to a matrix form. The details of
-approximating these values depend on the condition at the face.
+For every face condition, we must derive an expression for flux to be used in
+the governing equation. Once we do this, it is trivial to rearrange to a matrix
+form. The flux derivations for each face condition are shown below.
 
 1. Internal Face
     If a face is shared by two cells, then it is an internal face.
@@ -64,10 +64,10 @@ approximating these values depend on the condition at the face.
     of flux balance at a face. This is especially important for internal faces
     where the two connecting cells have dissimilar material properties.
 
-    The derivation starts by considering different approximations to the heat
-    flux through the face. To ensure flux balance, the face flux calculated from
-    cell centered values must be the same as the flux found when approaching the
-    face from each side.
+    The derivation starts by considering the approximations of heat flux as the
+    face is approached from each connecting cell. To ensure flux balance, the
+    face flux calculated from the neighboring cell centered values must be the
+    same as the flux found when approaching the face from each side.
 
     .. math::
         J_f = k_f \frac{T_1 - T_2}{\delta_1 + \delta_2} = k_1 \frac{T_1 - T_f}{\delta_1} = k_2 \frac{T_f - T_2}{\delta_2}
@@ -80,6 +80,7 @@ approximating these values depend on the condition at the face.
     | :math:`1` denotes the first cell that uses the face :math:`f`
     | :math:`2` denotes the second cell that uses the face :math:`f`
     | :math:`d` is the distance from the cell center to the face center :math:`f`
+    | :math:`\hat{n}` is the normal vector of face :math:`f`
 
     Rearrange to express temperature change in terms of heat flux.
 
@@ -119,7 +120,7 @@ approximating these values depend on the condition at the face.
     Now, define a face weighting which is a function of geometry only.
 
     .. math::
-        w_f = \frac{1}{1+\frac{d_1}{d_2}}
+        w_f = \frac{d_2}{d_1+d_2}
 
     Where
 
@@ -129,7 +130,7 @@ approximating these values depend on the condition at the face.
 
     .. math::
 
-        \boxed{k_f = \frac{1}{\frac{1-w_f}{k_1} + \frac{w_f}{k_2}}}
+        \boxed{k_f = \frac{k_1 k_2}{\frac{k_2(1-w_f)}{k_1} + k_2 w_f}}
 
     Now we can define the temperature gradient.
 
@@ -142,10 +143,10 @@ approximating these values depend on the condition at the face.
         J = -k(T, \vec{r}) \nabla T
 
     .. math::
-        J = -k_f \frac{T_j - T_i}{L}
+        J = -k_f \frac{T_j - T_i}{\delta_1 + \delta_2}
     
     .. important::
-        :math:`k_f` is a function of the k for each cell, which are a function of temperature. So, this step makes the problem inherently nonlinear.
+        :math:`k_f` is a function of the k for each cell, which is a function of temperature. So, this step makes the problem inherently nonlinear.
 
 2. Boundary Face: Adiabatic
     In the case of an adiabatic boundary, the heat flux is zero.
@@ -221,8 +222,8 @@ approximating these values depend on the condition at the face.
 
         \nabla T = \frac{T_f - T_i}{\delta_i}
     
-Temporal Discretization
------------------------
+Temporal Terms
+--------------
 
 If the problem is solving to steady state, the time derivative is zero.
 

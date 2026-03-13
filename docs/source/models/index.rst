@@ -25,7 +25,7 @@ Below is a directory to technical documentation for all models currently include
        | - :doc:`heat_transfer/tutorial`
        | - :doc:`heat_transfer/theory`
        | - :doc:`heat_transfer/numerical_implementation`
-       | - :doc:`heat_transfer/benchmarks/index`
+       | - :doc:`heat_transfer/verification/index`
        
    * - .. figure:: img/flow.png
           :scale: 25 %
@@ -40,7 +40,7 @@ Below is a directory to technical documentation for all models currently include
        | - :doc:`flow/tutorial`
        | - :doc:`flow/theory`
        | - :doc:`flow/numerical_implementation`
-       | - :doc:`flow/benchmarks/index`
+       | - :doc:`flow/verification/index`
 
    * - .. figure:: img/neutronics.png
           :scale: 25 %

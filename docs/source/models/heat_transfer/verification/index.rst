@@ -1,5 +1,5 @@
-Benchmarks
-==========
+Verification
+============
 
 .. toctree::
   :hidden:
@@ -8,7 +8,7 @@ Benchmarks
   dirichletsteady1d.rst
   nafemstransient1d.rst
 
-Below are the benchmarks for the :class:`cedar.HeatTransfer` model.
+Below are the verification cases for the :class:`cedar.HeatTransfer` model.
 
 .. list-table::
    :header-rows: 1

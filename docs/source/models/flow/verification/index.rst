@@ -1,12 +1,12 @@
-Benchmarks
-==========
+Verification
+============
 
 .. toctree::
   :hidden:
 
   thmcase1.rst
 
-Below are the benchmarks for the :class:`cedar.Flow` model.
+Below are the verification cases for the :class:`cedar.Flow` model.
 
 .. list-table::
    :header-rows: 1
