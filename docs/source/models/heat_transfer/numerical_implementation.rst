@@ -70,15 +70,15 @@ form. The flux derivations for each face condition are shown below.
     same as the flux found when approaching the face from each side.
 
     .. math::
-        J_f = k_f \frac{T_1 - T_2}{\delta_1 + \delta_2} = k_1 \frac{T_1 - T_f}{\delta_1} = k_2 \frac{T_f - T_2}{\delta_2}
+        J_f = k_f \frac{T_i - T_j}{\delta_i + \delta_j} = k_i \frac{T_i - T_f}{\delta_i} = k_j \frac{T_f - T_j}{\delta_j}
 
     .. math::
         \delta = d \cdot \hat{n_f}
 
     Where
 
-    | :math:`1` denotes the first cell that uses the face :math:`f`
-    | :math:`2` denotes the second cell that uses the face :math:`f`
+    | :math:`i` denotes the first cell that uses the face :math:`f`
+    | :math:`j` denotes the second cell that uses the face :math:`f`
     | :math:`d` is the distance from the cell center to the face center :math:`f`
     | :math:`\hat{n}` is the normal vector of face :math:`f`
 
@@ -86,41 +86,41 @@ form. The flux derivations for each face condition are shown below.
 
     .. math::
 
-        T_1 - T_f = J_f \frac{\delta_1}{k_1}
+        T_i - T_f = J_f \frac{\delta_i}{k_i}
 
     .. math::
 
-        T_f - T_2 = J_f \frac{\delta_2}{k_2}
+        T_f - T_j = J_f \frac{\delta_j}{k_j}
 
     Add together.
 
     .. math::
 
-        T_1 - T_2 = J_f \left( \frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}\right)
+        T_i - T_j = J_f \left( \frac{\delta_i}{k_i} + \frac{\delta_j}{k_j}\right)
 
-    Now, substitute this expression for :math:`T_1-T_2` into the expression of
+    Now, substitute this expression for :math:`T_i-T_j` into the expression of
     heat flux using cell centered values.
 
     .. math::
     
-        J_f = k_f \frac{J_f \left( \frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}\right)}{\delta_1 + \delta_2}
+        J_f = k_f \frac{J_f \left( \frac{\delta_i}{k_i} + \frac{\delta_j}{k_j}\right)}{\delta_i + \delta_j}
 
     Assume heat flux is non zero on internal faces.
 
     .. math::
     
-        1 = k_f \frac{\frac{\delta_1}{k_1} + \frac{\delta_2}{k_2}}{\delta_1 + \delta_2}
+        1 = k_f \frac{\frac{\delta_i}{k_i} + \frac{\delta_j}{k_j}}{\delta_i + \delta_j}
 
     Rearrange.
 
     .. math::
 
-        k_f = \frac{d_1 + d_2}{\frac{d_1}{k_1}+\frac{d_2}{k_2}}
+        k_f = \frac{\delta_i + \delta_j}{\frac{\delta_i}{k_i}+\frac{\delta_j}{k_j}}
 
     Now, define a face weighting which is a function of geometry only.
 
     .. math::
-        w_f = \frac{d_2}{d_1+d_2}
+        w_f = \frac{\delta_j}{\delta_i+\delta_j}
 
     Where
 
@@ -130,20 +130,19 @@ form. The flux derivations for each face condition are shown below.
 
     .. math::
 
-        \boxed{k_f = \frac{k_1 k_2}{\frac{k_2(1-w_f)}{k_1} + k_2 w_f}}
+        k_f = \frac{k_i k_j}{\frac{k_j(1-w_f)}{k_i} + k_j w_f}
 
-    Now we can define the temperature gradient.
-
-    .. math::
-        \boxed{\nabla T = \frac{T_j - T_i}{\delta_1 + \delta_2}}
-
-    Which gives us the flux through an internal face.
+    Now that we have an expression for the thermal conductivity at the internal
+    face, we can derive the expression for face flux.
 
     .. math::
-        J = -k(T, \vec{r}) \nabla T
+        \nabla T = -\frac{T_i - T_j}{\delta_i + \delta_j}
 
     .. math::
-        J = -k_f \frac{T_j - T_i}{\delta_1 + \delta_2}
+        J_f = -k_f(T, \vec{r}) \nabla T
+
+    .. math::
+        \boxed{J_f = k_f \frac{T_i - T_j}{\delta_i + \delta_j}}
     
     .. important::
         :math:`k_f` is a function of the k for each cell, which is a function of temperature. So, this step makes the problem inherently nonlinear.
@@ -152,25 +151,13 @@ form. The flux derivations for each face condition are shown below.
     In the case of an adiabatic boundary, the heat flux is zero.
 
     .. math::
-        J = 0 = -k_f(T, \vec{r}) \nabla T
-
-    For all boundary faces the thermal conductivity is assumed to be the
-    same at the face as it is at the cell center.
-
-    .. math::
-        k_f = k_i
-
-    Since the thermal conductivity is non-zero, the temperature gradient
-    must be zero.
-
-    .. math::
-        \nabla T = 0
+        J_f = 0 = -k_f(T, \vec{r}) \nabla T
 
     .. note::
         This is the default treatment of boundary faces unless a different boundary condition is set.
 
     .. note::
-        Since :math:`J` of adiabatic faces are not a function of any cell temperatures, they do not contribute to the linear A-b matrices.
+        Since :math:`J_f` of adiabatic faces are not a function of any cell temperatures, they do not contribute to the linear A-b matrices.
 
 3. Boundary Face: Known Value (Dirichlet) 
     The flux is computed using the temperature gradient calculated from a
@@ -191,7 +178,7 @@ form. The flux derivations for each face condition are shown below.
 
     The temperature gradient is calculated in a similar fashion to internal
     faces with some key changes. The characteristic length is now
-    :math:`\delta_i` instead of :math:`\delta_1 + \delta_2`. In other words, the
+    :math:`\delta_i` instead of :math:`\delta_i + \delta_j`. In other words, the
     characteristic length is effectively the distance from the cell center to
     the face center, rather than from the cell center to the neighboring cell
     center.
@@ -201,27 +188,59 @@ form. The flux derivations for each face condition are shown below.
 
     .. math::
 
-        \nabla T = \frac{T_f - T_i}{\delta_i}
+        \nabla T = -\frac{T_i - T_f}{\delta_i}
+
+    .. math::
+        J_f = -k_f \nabla T
+
+    .. math::
+        J_f = k_f \frac{T_i - T_f}{\delta_i}
 
 4. Boundary Face: Known Flux (Neumann)
-    The face flux is directly known.
+    The face flux is directly prescribed.
 
     .. math::
-        J = f(t, \vec{r})
+        J_f = f(t, \vec{r})
 
-    Like all other boundary faces, the thermal conductivity is assumed to be
-    the same at the face as it is at the cell center.
-
-    .. math::
-        k_f = k_i
-
-    The temperature gradient is calculated in the exact same way as a face
-    with a Dirichlet boundary condition.
+5. Boundary Face: Convective (Robin)
+    The convection boundary condition enforces a flux that is a function of the
+    boundary face temperature and some bulk flow temperature associated with the
+    boundary.
 
     .. math::
+        J_f = htc_f (T_f - T_\infty)
 
-        \nabla T = \frac{T_f - T_i}{\delta_i}
-    
+    Where
+
+    | :math:`\infty` denotes the bulk flow temperature.
+    | :math:`htc` is the heat transfer coefficient :math:`\frac{W}{m^2 K}`
+
+    However, since this expression of flux is in terms of boundary face
+    temperature, we must use a conservation of heat flux to write this in terms
+    of cell-centered temperatures.
+
+    .. math::
+        J_f = k_f \frac{T_i - T_f}{\delta_i} = htc_f \cdot (T_f - T_\infty)
+
+    We rearrange the convective boundary flux expression to obtain boundary face
+    temperature as a function of flux.
+
+    .. math::
+        T_f = \frac{J_f}{htc_f} + T_\infty
+
+    Plug this into the expression of heat flux in the cell.
+
+    .. math::
+        J_f = k_f \frac{T_i - T_f}{\delta_i}
+
+    .. math::
+        J_f = \frac{k_f}{\delta_i} (T_i - \frac{J_f}{htc_f} - T_\infty)
+
+    Now, solve for heat flux.
+
+    .. math::
+        \boxed{J_f = \frac{htc_f \cdot k_f}{\delta_i \cdot htc_f + k_f}(T_i - T_\infty)}
+
 Temporal Terms
 --------------
 

@@ -14,9 +14,10 @@ class Term(ABC):
         self.values[name] = np.zeros(self.N, dtype=np.float64)
         self._values_update_funcs[name] = self._interpret_user_value(user_value)
 
-    def _build(self, pts: np.ndarray, N: float):
+    def _build(self, pts: np.ndarray, N: float, geom_w: np.ndarray):
         self.pts: np.ndarray = pts
         self.N: float = N
+        self.geom_w: np.ndarray = geom_w / np.sum(geom_w)
 
         self.values: dict[str, np.ndarray] = {}
         self._values_update_funcs: dict[str, Callable] = {}
@@ -29,7 +30,6 @@ class Term(ABC):
         """
         Convert user value input to a Callable f(t) for self.update()
 
-        :param var: User input float, np.array, Callable, or cedar.Transfer
         """
         if callable(user_value):
             x, y, z = self.pts[:, 0], self.pts[:, 1], self.pts[:, 2]

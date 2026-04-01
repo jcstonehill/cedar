@@ -1,6 +1,6 @@
 from cedar.log import Log
-from cedar.mesh import Mesh, Mesh0D, Mesh1D, Mesh3D
-from cedar.field import Field, FieldView
+from cedar.mesh import *
+from cedar.field import *
 from cedar.transfer import Transfer
 from cedar.term import Term
 from cedar.fluid import Fluid
@@ -28,14 +28,14 @@ from cedar.models.heat_transfer.source import *
 from cedar.models.heat_transfer.heat_transfer import *
 
 # Benchmarks
-import cedar.models.heat_transfer.benchmarks as _heat_transfer_benchmarks
+import cedar.models.heat_transfer.verification as _heat_transfer_verification
 
 # Benchmarks
 _benchmarks: dict[str, list[cedar.Benchmark]] = {
     "Heat Transfer": [
-        _heat_transfer_benchmarks.AdiabaticTransient0D,
-        _heat_transfer_benchmarks.DirichletSteady1D,
-        _heat_transfer_benchmarks.NAFEMSTransient1D,
+        _heat_transfer_verification.AdiabaticTransient0D,
+        _heat_transfer_verification.DirichletSteady1D,
+        _heat_transfer_verification.NAFEMSTransient1D,
     ]
 }
 

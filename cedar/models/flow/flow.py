@@ -7,9 +7,9 @@ import cedar
 
 class Flow(cedar.Model):
     """
-    Flow model using FVM.
+    Heated internal pipe flow.
 
-    Solves the compressible euler flow equations on a 1D mesh.
+    Solves the 1D compressible euler flow equations on a 1D mesh.
 
     Parameters
     ----------
@@ -36,8 +36,24 @@ class Flow(cedar.Model):
 
     Attributes
     ----------
-    mesh : cedar.Mesh1D
-        The mesh that the flow equations will be solved on.
+    model_name : str
+        Name of the model.
+    mesh : cedar.Mesh
+        The mesh for the model.
+    bcs : dict[str, cedar.Term]
+        Boundary Conditions. The keys are boundaries in the mesh.
+    sources: dict[str, cedar.Term]
+        Source Terms. The keys are region names in the mesh.
+    scalar_fields : dict[str, cedar.ScalarField]
+        A dictionary of all scalar fields created on this model.
+    boundary_face_fields : dict[str, cedar.BoundaryFaceField]
+        A dictionary of all boundary face fields created on this model.
+    cell_fields : dict[str, cedar.CellField]
+        A dictionary of all cell fields created on this model.
+    fields : dict[str, cedar.Field]
+        A dictionary of all fields created on this model.
+    output_fields : list[str]
+        A list of field names which will be saved to the output file.
     A : float
         Cross sectional flow area in [m^2].
     P_wall : float
@@ -46,10 +62,6 @@ class Flow(cedar.Model):
         Wall roughness in [m].
     fluid : cedar.Fluid
         Fluid properties object.
-    bcs : dict[str, cedar.Term]
-        Boundary Conditions. The keys are boundary names in Flow.mesh.
-    sources : dict[str, cedar.FlowSource]
-        Source Terms. The key is the region name in Flow.mesh.
     inlet : cedar.InletBC
         Inlet boundary condition.
     outlet : cedar.OutletBC
@@ -87,13 +99,7 @@ class Flow(cedar.Model):
 
     """
 
-    @property
-    def mesh(self) -> cedar.Mesh1D:
-        return self._mesh
-
-    @mesh.setter
-    def mesh(self, val):
-        cedar.Log.error("Unable to set Flow.mesh after instantiation.")
+    model_name = "Flow"
 
     def __init__(
         self,
@@ -107,47 +113,55 @@ class Flow(cedar.Model):
         eps: float = None,
         fluid: cedar.Fluid = None,
     ):
-        self._mesh: cedar.Mesh1D = cedar.Mesh1D(
+        mesh: cedar.Mesh1D = cedar.Mesh1D(
             N_cells=N_cells,
             L=L,
+            A=A,
             region=name,
             start_boundary=name + ":in",
             end_boundary=name + ":out",
             start=start,
             basis=basis,
         )
+
+        super().__init__(mesh)
+
+        # Parent Attributes
+        self.mesh: cedar.Mesh1D
+        self.bcs: dict[str, cedar.FlowInletBC | cedar.FlowOutletBC]
+        self.sources: dict[str, cedar.FlowSource]
+
+        # Attributes
         self.A = A
         self.P_wall = P_wall
         self.eps = eps
         self.fluid = fluid
 
-        self.bcs: dict[str, cedar.Term] = {}
-        self.sources: dict[str, cedar.FlowSource] = {}
+        self.inlet = cedar.FlowInletBC()
+        self.outlet = cedar.FlowOutletBC()
 
-        self.inlet = cedar.InletBC()
-        self.outlet = cedar.OutletBC()
+        # Fields
+        self.T = self._add_cell_field("T", 300)
+        self.P = self._add_cell_field("P", 101325)
+        self.u = self._add_cell_field("u", 1)
 
-        self.T = self._add_field("T", "Flow", 300)
-        self.P = self._add_field("P", "Flow", 101325)
-        self.u = self._add_field("u", "Flow", 1)
+        self.rho = self._add_cell_field("rho", 1)
+        self.mu = self._add_cell_field("mu", 1)
+        self.cp = self._add_cell_field("cp", 1)
+        self.k = self._add_cell_field("k", 1)
 
-        self.rho = self._add_field("rho", "Flow", 1)
-        self.mu = self._add_field("mu", "Flow", 1)
-        self.cp = self._add_field("cp", "Flow", 1)
-        self.k = self._add_field("k", "Flow", 1)
+        self.e = self._add_cell_field("e", 1)
+        self.E = self._add_cell_field("E", 1)
 
-        self.e = self._add_field("e", "Flow", 1)
-        self.E = self._add_field("E", "Flow", 1)
+        self.Re = self._add_cell_field("Re", 1)
+        self.Pr = self._add_cell_field("Pr", 1)
 
-        self.Re = self._add_field("Re", "Flow", 1)
-        self.Pr = self._add_field("Pr", "Flow", 1)
+        self.ff = self._add_cell_field("ff", 0.1)
 
-        self.ff = self._add_field("ff", "Flow", 0.1)
-
-        self.T_wall = self._add_field("T_wall", "Flow", 300)
-        self.Nu = self._add_field("Nu", "Flow", 1)
-        self.htc = self._add_field("htc", "Flow", 1)
-        self.Qdot = self._add_field("Qdot", "Flow", 0)
+        self.T_wall = self._add_cell_field("T_wall", 300)
+        self.Nu = self._add_cell_field("Nu", 1)
+        self.htc = self._add_cell_field("htc", 1)
+        self.Qdot = self._add_cell_field("Qdot", 0)
 
     def add_source(self, source: cedar.FlowSource):
         """
@@ -170,7 +184,7 @@ class Flow(cedar.Model):
                 self.mesh.regions[0]: cedar.FlowQdotSource(0)
             }
 
-        self.bcs: dict[str, cedar.InletBC | cedar.OutletBC] = {
+        self.bcs: dict[str, cedar.FlowInletBC | cedar.FlowOutletBC] = {
             self.mesh.boundaries[0]: self.inlet,
             self.mesh.boundaries[1]: self.outlet,
         }

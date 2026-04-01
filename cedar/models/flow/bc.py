@@ -3,7 +3,7 @@ from typing import Callable
 import cedar
 
 
-class InletBC(cedar.Term):
+class FlowInletBC(cedar.Term):
     """
     Inlet boundary condition for :class:`cedar.Flow`.
 
@@ -59,7 +59,7 @@ class InletBC(cedar.Term):
         self._add_value("mdot", mdot)
 
 
-class OutletBC(cedar.Term):
+class FlowOutletBC(cedar.Term):
     """
     Outlet boundary condition for :class:`cedar.Flow`.
 

@@ -3,6 +3,7 @@ Models
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
    :hidden:
 
    Heat Transfer <heat_transfer/overview.rst>

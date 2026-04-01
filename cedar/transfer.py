@@ -1,5 +1,3 @@
-from __future__ import annotations
-from abc import ABC, abstractmethod
 import numpy as np
 
 import cedar
@@ -28,8 +26,7 @@ class Transfer:
     @classmethod
     def with_nearest_value_mapping(
         cls, src: cedar.Field | cedar.FieldView, tgt_pts: np.ndarray
-    ) -> "Transfer":
-
+    ):
         if isinstance(src, cedar.Field):
             src_pts = src.mesh.cell_centers
 
@@ -53,7 +50,7 @@ class Transfer:
     @classmethod
     def with_layered_area_avg_mapping(
         cls, src: cedar.FieldView, layer_mesh: cedar.Mesh1D
-    ) -> Transfer:
+    ):
         mapping = np.zeros((layer_mesh.N_cells, src.mesh.boundary_N[src.domain]))
         face_i = src.mesh.boundary_i[src.domain]
 
@@ -75,7 +72,7 @@ class Transfer:
     @classmethod
     def with_layered_summation_mapping(
         cls, src: cedar.Field | cedar.FieldView, layer_mesh: cedar.Mesh1D
-    ) -> "Transfer":
+    ):
         mapping = np.zeros((layer_mesh.N_cells, src.mesh.boundary_N[src.domain]))
         face_i = src.mesh.boundary_i[src.domain]
 
@@ -92,7 +89,7 @@ class Transfer:
         return Transfer(src, mapping)
 
     @classmethod
-    def with_summation_mapping(cls, src: cedar.Field | cedar.FieldView) -> "Transfer":
+    def with_summation_mapping(cls, src: cedar.Field | cedar.FieldView):
         # TODO This shouldn't only work with boundaries, we should make it work with regions or fields too.
         mapping = np.ones(src.mesh.boundary_N[src.domain], dtype=np.float64)
 

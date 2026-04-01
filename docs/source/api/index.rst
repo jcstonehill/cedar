@@ -21,8 +21,8 @@ cedar
    cedar.Term
    cedar.Transfer
 
-Models
-------
+cedar.models
+------------
 .. autosummary::
    :toctree: generated
    :nosignatures:
@@ -38,8 +38,8 @@ Models
    cedar.HeatTransferTotalSource
    cedar.HeatTransferVolumetricSource
    cedar.Flow
-   cedar.InletBC
-   cedar.OutletBC
+   cedar.FlowInletBC
+   cedar.FlowOutletBC
    cedar.FlowSource
    cedar.FlowQdotSource
    cedar.FlowHeatFluxSource

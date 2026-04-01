@@ -68,10 +68,12 @@ class HeatTransferTotalSource(cedar.Term):
         if self.shape is not None:
             x, y, z = self.pts[:, 0], self.pts[:, 1], self.pts[:, 2]
             shape = self.shape(x, y, z)
-            shape = shape / np.sum(shape)
 
         else:
             shape = np.full(self.N, 1 / self.N, dtype=np.float64)
+
+        shape = shape * self.geom_w
+        shape = shape / np.sum(shape)
 
         if callable(self.Qgen):
             Qgen_func = lambda x, y, z, t: self.Qgen(t) * shape

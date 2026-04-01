@@ -45,6 +45,12 @@ class Mesh(ABC):
         self.boundary_i: dict[str, np.ndarray] = {}
         self.boundary_N: dict[str, int] = {}
 
+        self.cell_vols: np.ndarray = []
+        self.face_areas: np.ndarray = []
+
+        self.region_vol: dict[str, float] = {}
+        self.boundary_area: dict[str, float] = {}
+
     def get_local_cell_i(self, global_cell_i: int) -> tuple[str, int]:
         for region in self.regions:
             cell_indices = self.region_i[region]
@@ -83,10 +89,13 @@ class Mesh1D(Mesh):
         "-z": np.array([0, 0, -1]),
     }
 
+    # NEED TO ADD AN AREA PARAMETER HERE AND THEN CALCULATE THE CELL VOLS AND FACE AREAS TO MAKE ALL MESHES THE SAME INTERFACE
+
     def __init__(
         self,
         N_cells: int,
         L: float,
+        A: float,
         region: str,
         start_boundary: str,
         end_boundary: str,
@@ -97,6 +106,7 @@ class Mesh1D(Mesh):
         self.dim: int = 1
 
         self.L = L
+        self.A = A
         self.start = np.array(start)
         self.end = start + L * self.basis_vec[basis]
         self.basis = basis
@@ -131,6 +141,12 @@ class Mesh1D(Mesh):
 
         self.boundary_i: dict[str, np.ndarray] = {}
         self.boundary_N: dict[str, int] = {}
+
+        self.cell_vols: np.ndarray = []
+        self.face_areas: np.ndarray = []
+
+        self.region_vol: dict[str, float] = {}
+        self.boundary_area: dict[str, float] = {}
 
     def _build(self):
         # Attributes After Build
@@ -188,6 +204,23 @@ class Mesh1D(Mesh):
             self.boundaries[1]: np.array([-1]),
         }
         self.boundary_N: dict[str, int] = {self.boundaries[0]: 1, self.boundaries[1]: 1}
+
+        self.cell_vols: np.ndarray = []
+        self.face_areas: np.ndarray = []
+
+        self.region_vol: dict[str, float] = {}
+        self.boundary_area: dict[str, float] = {}
+
+        self.cell_vols: np.ndarray = np.full(
+            self.N_cells, self.ds * self.A, dtype=np.float64
+        )
+        self.face_areas: np.ndarray = np.full(self.N_cells, self.A, dtype=np.float64)
+
+        self.region_vol: dict[str, float] = {self.regions[0]: self.L * self.A}
+        self.boundary_area: dict[str, float] = {
+            self.boundaries[0]: self.A,
+            self.boundaries[1]: self.A,
+        }
 
     def _vtkhdf_dict(self) -> dict:
         vtkhdf_dict = {
@@ -259,9 +292,9 @@ class Mesh3D(Mesh):
         self.boundary_i: dict[str, np.ndarray] = {}
         self.boundary_N: dict[str, int] = {}
 
-        # Specific to 3D
         self.cell_vols: np.ndarray = []
         self.face_areas: np.ndarray = []
+
         self.region_vol: dict[str, float] = {}
         self.boundary_area: dict[str, float] = {}
 

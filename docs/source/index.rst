@@ -30,7 +30,7 @@ hydraulics, and system power balance. Cedar is written entirely in Python, which
 makes it both easy to use and flexible to extend with new physics models.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents
    :hidden:
 
@@ -39,6 +39,6 @@ makes it both easy to use and flexible to extend with new physics models.
    models/index
    materials/index
    fluids/index
-   vv/index
+   case_studies/index
    api/index
    GitHub <https://github.com/jcstonehill/cedar>

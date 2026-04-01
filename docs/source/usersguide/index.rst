@@ -7,6 +7,7 @@ aspects of using Cedar.
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    what_is_cedar.rst
    mesh_generation.rst

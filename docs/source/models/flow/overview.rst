@@ -3,6 +3,7 @@ Overview
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
    :hidden:
 
    tutorial.rst

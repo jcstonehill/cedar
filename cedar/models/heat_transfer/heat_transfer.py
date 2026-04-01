@@ -7,10 +7,10 @@ import cedar
 
 class HeatTransfer(cedar.Model):
     """
-    Heat conduction model using FVM.
+    Heat transfer in solids.
 
-    Solves the heat transfer equation on a 3D mesh with region-dependent
-    materials, heat sources, and boundary conditions.
+    Solves the 3D transient heat transfer equation on a 3D mesh with
+    region-dependent materials, heat sources, and boundary conditions.
 
     Parameters
     ----------
@@ -19,18 +19,27 @@ class HeatTransfer(cedar.Model):
 
     Attributes
     ----------
-    mesh : cedar.Mesh3D
-        The mesh that the heat conduction equation will be solved on.
+    model_name : str
+        Name of the model.
+    mesh : cedar.Mesh
+        The mesh for the model.
+    bcs : dict[str, cedar.Term]
+        Boundary Conditions. The keys are boundaries in the mesh.
+    sources: dict[str, cedar.Term]
+        Source Terms. The keys are region names in the mesh.
+    scalar_fields : dict[str, cedar.ScalarField]
+        A dictionary of all scalar fields created on this model.
+    boundary_face_fields : dict[str, cedar.BoundaryFaceField]
+        A dictionary of all boundary face fields created on this model.
+    cell_fields : dict[str, cedar.CellField]
+        A dictionary of all cell fields created on this model.
+    fields : dict[str, cedar.Field]
+        A dictionary of all fields created on this model.
+    output_fields : list[str]
+        A list of field names which will be saved to the output file.
     materials : dict[str, cedar.Material]
         Material properties objects. One entry must be provided for each region.
         You can add entries with HeatTransfer.add_material().
-    bcs : dict[str, cedar.HeatTransferBC]
-        Boundary Conditions. The keys are boundary names in HeatTransfer.mesh.
-        Any boundary without an entry listed here will default to
-        cedar.AdiabaticBC().
-    sources: dict[str, cedar.HeatTransferSource]
-        Source Terms. The keys are region names in HeatTransfer.mesh. Any region
-        without an entry will have zero heat generation.
     T : cedar.Field
         Temperature in [K].
     Qgen : cedar.Field
@@ -50,32 +59,32 @@ class HeatTransfer(cedar.Model):
 
     """
 
-    def __init__(
-        self,
-        mesh: cedar.Mesh3D = None,
-    ):
-        self.mesh: cedar.Mesh3D = mesh
+    model_name = "HeatTransfer"
+
+    def __init__(self, mesh: cedar.Mesh3D = None):
+        super().__init__(mesh)
+
+        # Parent Attributes
+        self.mesh: cedar.Mesh3D
+        self.bcs: dict[str, cedar.HeatTransferBC]
+        self.sources: dict[str, cedar.HeatTransferSource]
+
+        # Attributes
         self.materials: dict[str, cedar.Material] = {}
-        self.bcs: dict[str, cedar.HeatTransferBC] = {}
-        self.sources: dict[str, cedar.HeatTransferSource] = {}
 
-        self.T: cedar.Field = self._add_field(
-            "T", "HeatTransfer", 300, is_on_boundaries=True
-        )
+        # Fields
+        self.T: cedar.CellField = self._add_cell_field("T", 300)
 
-        self.Qgen: cedar.Field = self._add_field(
-            "Qgen", "HeatTransfer", 0, is_on_boundaries=True
-        )
-        self.volQgen: cedar.Field = self._add_field("volQgen", "HeatTransfer", 0)
-        self.k: cedar.Field = self._add_field("k", "HeatTransfer", 1)
-        self.rho: cedar.Field = self._add_field("rho", "HeatTransfer", 1)
-        self.cp: cedar.Field = self._add_field("cp", "HeatTransfer", 1)
+        self.Qgen: cedar.CellField = self._add_cell_field("Qgen", 0)
+        self.volQgen: cedar.CellField = self._add_cell_field("volQgen", 0)
+        self.k: cedar.CellField = self._add_cell_field("k", 1)
+        self.rho: cedar.CellField = self._add_cell_field("rho", 1)
+        self.cp: cedar.CellField = self._add_cell_field("cp", 1)
 
-        self.J: cedar.Field = self._add_field(
-            "J", "HeatTransfer", 0, is_on_regions=False, is_on_boundaries=True
-        )
-        self.Qdot: cedar.Field = self._add_field(
-            "Qdot", "HeatTransfer", 0, is_on_regions=False, is_on_boundaries=True
+        self.J: cedar.BoundaryFaceField = self._add_boundary_face_field("J", 0)
+        self.Qdot: cedar.BoundaryFaceField = self._add_boundary_face_field("Qdot", 0)
+        self.T_wall: cedar.BoundaryFaceField = self._add_boundary_face_field(
+            "T_wall", 300
         )
 
     def add_source(self, region: str, source: cedar.HeatTransferSource):
@@ -172,14 +181,14 @@ class HeatTransfer(cedar.Model):
         for boundary in self.mesh.boundaries:
             boundary_i = self.mesh.boundary_i[boundary]
 
-            T = self.T.get(boundary)
+            T_wall = self.T_wall.get(boundary)
             k = k_face[boundary_i]
             d = self.mesh.face_d[boundary_i, 0]
             area = self.mesh.face_areas[boundary_i]
 
             c1 = self.mesh.face_cells_i[boundary_i, 0]
 
-            LHS, RHS = self.bcs[boundary]._ht_contribution(T, k, d, area)
+            LHS, RHS = self.bcs[boundary]._ht_contribution(T_wall, k, d, area)
 
             rows.extend(c1)
             cols.extend(c1)
@@ -252,7 +261,7 @@ class HeatTransfer(cedar.Model):
             d = self.mesh.face_d[face_i, 0]
 
             T_boundary_face = self.bcs[boundary]._boundary_T(T_cell, k_face[face_i], d)
-            self.T._set(T_boundary_face, boundary)
+            self.T_wall._set(T_boundary_face, boundary)
 
             J_boundary_face = self.bcs[boundary]._boundary_J(T_cell, k_face[face_i], d)
             self.J._set(J_boundary_face, boundary)
@@ -312,8 +321,6 @@ class HeatTransfer(cedar.Model):
     def _rho_by_cell(self):
         """
         Compute cell-wise density.
-
-        :return: Density per cell.
         """
         rho = np.zeros(self.mesh.N_cells, dtype=np.float64)
 

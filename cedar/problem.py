@@ -61,22 +61,24 @@ class Problem:
         for model in self.models:
             model._build()
 
+            for field in model.all_fields.values():
+                field._build(model.mesh)
+
             for boundary, bc in model.bcs.items():
                 N = model.mesh.boundary_N[boundary]
                 face_i = model.mesh.boundary_i[boundary]
                 pts = model.mesh.face_centers[face_i]
+                face_areas = model.mesh.face_areas[face_i]
 
-                bc._build(pts, N)
+                bc._build(pts, N, face_areas)
 
-            for (
-                region,
-                source,
-            ) in model.sources.items():
+            for region, source in model.sources.items():
                 N = model.mesh.region_N[region]
                 cell_i = model.mesh.region_i[region]
                 pts = model.mesh.cell_centers[cell_i]
+                cell_vols = model.mesh.cell_vols[cell_i]
 
-                source._build(pts, N)
+                source._build(pts, N, cell_vols)
 
         cedar.Log.remove_level()
         cedar.Log.message("Done")
@@ -94,22 +96,28 @@ class Problem:
 
         self.transfers: list[cedar.Transfer] = []
 
+        # Initialize model.
         for model in self.models:
             model._initialize()
 
-            for field in model.fields.values():
-                field.mesh = model.mesh
-
+        # Initialize fields, BCs, and sources.
         for model in self.models:
-            for field in model.fields.values():
+            for field in model.all_fields.values():
                 field._initialize()
 
             for source in model.sources.values():
                 source._initialize()
-                self.transfers.extend(source.transfers)
 
             for bc in model.bcs.values():
                 bc._initialize()
+
+        # Now that everything is initialized, pull out transfers from BCs and
+        # sources.
+        for model in self.models:
+            for source in model.sources.values():
+                self.transfers.extend(source.transfers)
+
+            for bc in model.bcs.values():
                 self.transfers.extend(bc.transfers)
 
         cedar.Log.message("Done")
@@ -117,10 +125,6 @@ class Problem:
         cedar.Log.line_break()
 
         self._is_initialized = True
-
-    # def check(self):
-    #     for model in self.models:
-    #         model.check()
 
     def _post_commands(self):
         try:
@@ -134,7 +138,6 @@ class Problem:
     def solve(self):
         self._build()
         self._initialize()
-        # self.check()
 
         is_steady = self.t_end < 0
 
@@ -184,7 +187,7 @@ class Problem:
                 cedar.Log.message(f"Time Step {i},   t = {t} [s],   dt = {self.dt} [s]")
                 cedar.Log.add_level()
 
-                self._step(t)
+                self._step()
                 self._solve_once(t, self.dt)
 
                 cedar.Log.remove_level()
@@ -207,10 +210,13 @@ class Problem:
 
         self._post_commands()
 
-    def _step(self, t: float):
+    def _step(self):
         for model in self.models:
-            for field in model.fields.values():
-                field._step(t)
+
+            # Cell fields are the only ones that have initial conditions, so
+            # they're the only ones that need to step
+            for field in model.cell_fields.values():
+                field._step()
 
     def _solve_once(self, t: float, dt: float = None) -> bool:
         for i in range(self.max_iter):
@@ -269,16 +275,27 @@ class Problem:
                 steps.create_group("CellDataOffsets")
 
             for model in self.models:
-                for field_name in model.output_fields:
-                    field = model.fields[field_name]
+                # Cell Fields
+                for field_name in model.cell_fields:
+                    if field_name in model.output_fields:
+                        for block in model.mesh.regions:
+                            assembly[block]["CellData"].create_dataset(
+                                field_name, (0,), maxshape=(None,), dtype="f"
+                            )
+                            assembly[block]["Steps"]["CellDataOffsets"].create_dataset(
+                                field_name, (0,), maxshape=(None,), dtype="f"
+                            )
 
-                    for block, data in field._values.items():
-                        assembly[block]["CellData"].create_dataset(
-                            field_name, (0,), maxshape=(None,), dtype="f"
-                        )
-                        assembly[block]["Steps"]["CellDataOffsets"].create_dataset(
-                            field_name, (0,), maxshape=(None,), dtype="f"
-                        )
+                # Boundary Face Fields
+                for field_name in model.boundary_face_fields:
+                    if field_name in model.output_fields:
+                        for block in model.mesh.boundaries:
+                            assembly[block]["CellData"].create_dataset(
+                                field_name, (0,), maxshape=(None,), dtype="f"
+                            )
+                            assembly[block]["Steps"]["CellDataOffsets"].create_dataset(
+                                field_name, (0,), maxshape=(None,), dtype="f"
+                            )
 
     def _append_N_steps_to_output(self, N_steps: int):
         with h5.File(self.output, "a") as f:
@@ -306,18 +323,37 @@ class Problem:
                 self._extend_dataset(steps["ConnectivityIdOffsets"], (0,))
 
             for model in self.models:
-                for field_name in model.output_fields:
-                    field = model.fields[field_name]
+                # Cell Fields
+                for field_name, field in model.cell_fields.items():
+                    if field_name in model.output_fields:
+                        for block in model.mesh.regions:
+                            data = field.get(block)
 
-                    for block_name, data in field._values.items():
-                        offsets = assembly[block_name]["Steps"]["CellDataOffsets"]
-                        self._extend_dataset(
-                            offsets[field_name],
-                            (assembly[block_name]["CellData"][field_name].shape[0],),
-                        )
+                            offsets = assembly[block]["Steps"]["CellDataOffsets"]
 
-                        cell_data = assembly[block_name]["CellData"]
-                        self._extend_dataset(cell_data[field_name], data)
+                            self._extend_dataset(
+                                offsets[field_name],
+                                (assembly[block]["CellData"][field_name].shape[0],),
+                            )
+
+                            cell_data = assembly[block]["CellData"]
+                            self._extend_dataset(cell_data[field_name], data)
+
+                # Boundary Face Fields
+                for field_name, field in model.boundary_face_fields.items():
+                    if field_name in model.output_fields:
+                        for block in model.mesh.boundaries:
+                            data = field.get(block)
+
+                            offsets = assembly[block]["Steps"]["CellDataOffsets"]
+
+                            self._extend_dataset(
+                                offsets[field_name],
+                                (assembly[block]["CellData"][field_name].shape[0],),
+                            )
+
+                            cell_data = assembly[block]["CellData"]
+                            self._extend_dataset(cell_data[field_name], data)
 
     def _create_output(self):
         VERSION = (2, 5)

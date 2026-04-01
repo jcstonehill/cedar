@@ -2,15 +2,16 @@ Overview
 ========
 
 .. toctree::
-   :maxdepth: 1
-   :hidden:
+  :maxdepth: 1
+  :titlesonly:
+  :hidden:
 
-   tutorial.rst
-   theory.rst
-   numerical_implementation.rst
-   verification/index.rst
+  tutorial.rst
+  theory.rst
+  numerical_implementation.rst
+  verification/index.rst
 
-The :class:`cedar.HeatTransfer` model solves the heat transfer equation on a 3D mesh. 
+The :class:`cedar.HeatTransfer` model solves the 3D transient heat transfer equation.
 
 The theory and implementation are based heavily on [Mazumder_2016]_.
 
@@ -27,8 +28,8 @@ Where
 | :math:`k` is thermal conductivity :math:`[\frac{W}{m K}]`
 | :math:`\dot{q}'''` is volumetric internal heat source :math:`[\frac{W}{m^3}]`
 
-Fields
-------
+.. rubric:: Fields
+  :heading-level: 2
 
 .. list-table:: 
    :header-rows: 1
@@ -37,39 +38,52 @@ Fields
    * - Field
      - Description
      - Units
+     - Type
      - Requires IC
    * - T
      - Temperature
      - :math:`K`
-     - Yes
+     - Cell
+     - X
    * - Qgen
      - Heat Generation
      - :math:`W`
-     - No
+     - Cell
+     - 
    * - volQgen
      - Volumetric Heat Generation
      - :math:`\frac{W}{m^3}`
-     - No
+     - Cell
+     - 
    * - k
      - Thermal Conductivity
      - :math:`\frac{W}{m-K}`
-     - No
+     - Cell
+     - 
    * - cp
      - Specific Heat Capacity
      - :math:`\frac{J}{kg-K}`
-     - No
+     - Cell
+     - 
+   * - T_wall
+     - Boundary temperature
+     - :math:`K`
+     - Boundary Face
+     - 
    * - J
      - Boundary heat flux
      - :math:`\frac{W}{m^2}`
-     - No
+     - Boundary Face
+     - 
    * - Qdot
-     - Boundary heat flux
+     - Boundary heat transfer
      - :math:`W`
-     - No
+     - Boundary Face
+     - 
 
 
-Boundary Conditions
--------------------
+.. rubric:: Boundary Conditions
+  :heading-level: 2
 
 .. list-table:: 
    :header-rows: 1
@@ -91,8 +105,8 @@ Boundary Conditions
      - Enforces a heat flux based on convection to a fluid.
      - T_flow, htc
 
-Sources
--------
+.. rubric:: Sources
+  :heading-level: 2
 
 .. list-table:: 
    :header-rows: 1
@@ -108,8 +122,8 @@ Sources
      - Volumetric heating is applied to cells.
      - N/A
 
-References
-----------
+.. rubric:: References
+  :heading-level: 2
 
 .. [Mazumder_2016] S. Mazumder, Numerical Methods for Partial Differential
        Equations: Finite Difference and Finite Volume Methods. 2016.
